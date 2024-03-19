@@ -1,0 +1,18 @@
+.button-text{
+    cursor: pointer;
+    transition: color .3s;
+    font-size: var(--button-text-font-size, 13px);
+}
+.button-text:hover{
+    color: var(--button-text-color, var(--blue1));
+}
+.button-text.active{
+    color: var(--button-text-active-color, var(--blue2));
+}
+.clickable-icon{
+    cursor: pointer;
+    transition: color .3s;
+}
+.clickable-icon:hover{
+    color: var(--el-color-primary-light-3);
+}
