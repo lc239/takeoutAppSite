@@ -1,27 +1,97 @@
 <script setup>
+    import HoverArea from '@/components/HoverArea.vue'
     import { useUserStore } from '@/stores/user'
     import { Search } from '@element-plus/icons-vue'
     import { storeToRefs } from 'pinia'
-    import { ref } from 'vue'
+    import { computed, ref } from 'vue'
+    import { searchRestaurantByPrefix } from '@/network/restaurantApi'
+    import { averageToFixed } from '@/js/unit'
+    import { useRouter } from 'vue-router'
 
     const { avatarUrl, isLogin } = storeToRefs(useUserStore())
+    const { logout } = useUserStore()
+    const router = useRouter()
     const searchContent = ref('')
+    const waitingSearchRes = ref(false)
+    const searchRes = ref([])
+    let searchTimer
+    const searchSize = 4
+    const searchMsgEnum = {
+        success: `搜索成功, 最多预览${searchSize}个结果`,
+        failed: '没有搜索到结果',
+        error: '出错了，请检查网络'
+    }
+    function search(prefix){
+        if(prefix === '') return
+        waitingSearchRes.value = true
+        clearTimeout(searchTimer)
+        searchTimer = setTimeout(() => {
+            searchRestaurantByPrefix(prefix, searchSize, {
+                onSucceed: restaurants => {
+                    searchRes.value = restaurants
+                    searchMsg.value = searchMsgEnum.success
+                },
+                onFailed: msg => {
+                    searchRes.value = []
+                    searchMsg.value = searchMsgEnum.failed
+                },
+                onError: err => {
+                    searchMsg.value = searchMsgEnum.error
+                },
+                onFinally: () => {
+                    waitingSearchRes.value = false
+                }
+            })
+        }, 500)
+    }
+    const showSearchSuggestion = ref(false)
+    const searchMsg = ref('')
+    function handleClickSearchItem(id){
+        router.push({name: 'RestaurantWithCategory', params: {id}})
+        searchInput.value.blur()
+    }
+    const searchInput = ref(null)
 </script>
 
 <template>
-    <!-- 用el-menu改一下 -->
+    <!-- 用el-menu改一下? -->
     <div class="top-nav-left">
         <RouterLink to="/" id="nav-to-home">首页</RouterLink>
         <el-button>下载安卓app</el-button>
     </div>
-    <el-input v-if="isLogin" v-model="searchContent" placeholder="输入店名搜索" size="large" class="search-input">
-        <template #append>
-            <el-button :icon="Search" />
-        </template>
-    </el-input>
+    <div class="top-nav-search vertical-position-parent">
+        <el-input v-if="isLogin" ref="searchInput" v-model="searchContent" placeholder="输入店名搜索" size="large" class="search-input" clearable
+            @input="search(searchContent)" @focus="showSearchSuggestion = true" @blur="showSearchSuggestion = false">
+            <template #append>
+                <el-button :icon="Search" />
+            </template>
+        </el-input>
+        <Transition name="fade">
+            <div v-show="showSearchSuggestion && searchContent.length" class="search-suggestion">
+                <div v-for="restaurant in searchRes" class="search-item" 
+                @click="handleClickSearchItem(restaurant.id)">
+                    <span>{{ restaurant.name }}</span>
+                    <el-rate class="search-restaurant-rate" :model-value="averageToFixed(restaurant.rate, restaurant.rateCount, 1)" disabled show-score score-template="{value}" />
+                </div>
+                <div class="search-item search-tip" v-loading="waitingSearchRes">
+                    <span v-show="!waitingSearchRes">
+                        {{ searchMsg }}
+                    </span>
+                </div>
+            </div>
+        </Transition>
+
+    </div>
     <div class="top-nav-right">
         <div class="nav-main">
-            <el-avatar v-if="isLogin"  class="avatar" :src="avatarUrl" />
+            <HoverArea v-if="isLogin" class="avatar-area">
+                <el-avatar class="avatar" :src="avatarUrl" />
+                <template #hover-to-show>
+                    <div class="avatar-in-content">
+                        <el-button @click="() => logout()">退出登录</el-button>
+                    </div>
+                </template>
+            </HoverArea>
             <el-button v-else class="to-login" circle type="primary">登录</el-button>
             <div class="nav-main-right">
                 <div class="to-center">
@@ -51,12 +121,6 @@
     display: flex;
 }
 
-.search-input {
-    max-width: 600px;
-    flex-grow: 0;
-    padding: 0 20px;
-}
-
 .top-nav-right .nav-main {
     display: flex;
     justify-content: space-between;
@@ -71,7 +135,7 @@
     margin-right: var(--avatar-right-margin);
 }
 
-.top-nav-right .nav-main .avatar {
+.top-nav-right .nav-main .avatar-area {
     margin-right: var(--avatar-right-margin);
     cursor: pointer;
 }
@@ -90,5 +154,50 @@
 
 .nav-main-right {
     width: max-content;
+}
+.avatar-in-content{
+    background-color: yellow
+}
+.top-nav-search{
+    flex: 1;
+    margin: 0 20px;
+    max-width: 600px;
+    z-index: 0;
+}
+.top-nav-search > .search-suggestion{
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    border-radius: 0 0 4px 4px; 
+    border: 1px solid grey;
+    border-top: 0;
+    box-shadow: 0 1px 1px gray;
+    background-color: white;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+}
+.search-suggestion > .search-item{
+    padding: 0 8px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #000;
+    transition: background-color .3s;
+}
+.search-suggestion > .search-item:not(:last-child):hover{
+    background-color: var(--el-color-primary-light-9);
+    cursor: pointer;
+}
+.search-suggestion > .search-item:last-child{
+    border-bottom: 0;
+}
+.search-suggestion > .search-item > .search-restaurant-rate{
+    cursor: pointer;
+}
+.search-suggestion > .search-tip{
+    width: 100%;
+    text-align: center;
 }
 </style>

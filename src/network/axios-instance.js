@@ -3,9 +3,19 @@ import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
+export const defaultHandlers = {
+    onSucceed: res => {}, //api的实现不一定是返回一个参数，也不一定返回哪个参数，具体看方法内部的调用
+    onFailed: msg => ElMessage.error(msg),
+    onError: err => {},
+    onFinally: () => {}
+}
+
+export const devPrefix = '/api/' //测试使用，打包前换成下面的空白
+// export const devPrefix = ''
+
 const instance = axios.create({
-    // baseURL: 'http://localhost:8080',
-    baseURL: '/api', //测试时跨域使用
+    // baseURL: 'http://8.130.174.243:8080/',
+    baseURL: devPrefix, //测试时跨域使用
     timeout: 5000
 })
 
@@ -36,14 +46,17 @@ instance.interceptors.response.use(response => {
                         return instance.request(config)
                     }
                 }).catch(err => {
-                    //还是未认证就退出登录去登录页面
                     const { logout } = useUserStore()
                     logout()
                     const router = useRouter()
-                    router.push({name: 'login'})
+                    router.push({name: 'Login'})
                 })
             }
             else{
+                const { logout } = useUserStore()
+                logout()
+                const router = useRouter()
+                router.push({name: 'Login'})
                 return Promise.reject(error)
             }
         }

@@ -1,5 +1,5 @@
 <script setup>
-    import { getRestaurantByRestaurantId } from '@/network/restaurantApi'
+    import { getRestaurantById } from '@/network/restaurantApi'
     import { ref, onBeforeMount, computed } from 'vue'
     import { aliUrlPrefix } from '@/js/aliOssConfig'
     import { fenToYuan, instantToFormat } from '@/js/unit'
@@ -14,11 +14,12 @@
     const restaurantName = ref('加载中')
     const restaurantImgFilename = ref('')
     onBeforeMount(() => {
-        getRestaurantByRestaurantId(props.order.restaurantId, restaurant => {
-            restaurantName.value = restaurant.name
-            restaurantImgFilename.value = restaurant.imageFilename
-        }, () => {
-            restaurantName.value = '店铺不存在'
+        getRestaurantById(props.order.restaurantId,{
+            onSucceed: restaurant =>{
+                restaurantName.value = restaurant.name
+                restaurantImgFilename.value = restaurant.imageFilename
+            },
+            onFailed: msg => restaurantName.value = '店铺不存在'
         })
     })
 </script>

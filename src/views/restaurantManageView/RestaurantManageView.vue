@@ -11,7 +11,7 @@
 </script>
 
 <template>
-    <el-container class="restaurant-view">
+    <el-container class="restaurant-manage-view">
         <el-main v-if="!isSeller" class="not-seller-content">
             <span class="tip">您还不是商家，填写下面信息注册成为商家吧</span>
             <el-form v-model="registerForm" style="width: 500px;">
@@ -24,7 +24,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button class="register-button"
-                        @click="() => register(registerForm, () => {}, msg => ElMessage(msg))">注册店铺</el-button>
+                        @click="() => register(registerForm)">注册店铺</el-button>
                 </el-form-item>
             </el-form>
         </el-main>
@@ -50,7 +50,7 @@
 </template>
 
 <style>
-.restaurant-view > .not-seller-content{
+.restaurant-manage-view > .not-seller-content{
     width: 100%;
     display: flex;
     row-gap: 30px;

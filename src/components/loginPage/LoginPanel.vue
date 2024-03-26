@@ -9,9 +9,6 @@
     phone: '',
     password: ''
   })
-  function onLoginSucceed(){
-    router.push({name: 'Home'})
-  }
 </script>
 
 <template>
@@ -25,7 +22,7 @@
       </el-form-item>
     </el-form>
     <div id="login-button-area">
-      <el-button @click="() => login(form, onLoginSucceed)">登录</el-button>
+      <el-button @click="() => login(form, { onSucceed: () => router.push({name: 'Home'}) })">登录</el-button>
       <span class="button-text">忘记密码？点击我使用验证码登录</span>
     </div>
   </div>

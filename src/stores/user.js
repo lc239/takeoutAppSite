@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { aliUrlPrefix, defaultUserAvatarFilename } from '@/js/aliOssConfig'
 import { defineStore } from 'pinia'
+import router from '@/router'
 
 export const useUserStore = defineStore('user', () => {
 
@@ -15,9 +16,9 @@ export const useUserStore = defineStore('user', () => {
         addresses.value = newAddresses.slice()
     }
     const hasAddress = computed(() => addresses.value?.length > 0)
-    const isSeller = ref(null)
+    const isSeller = ref(false)
     const setSeller = aBoolean => isSeller.value = aBoolean
-    const isDeliveryMan = ref(null)
+    const isDeliveryMan = ref(false)
     const avatarFilename = ref(null)
 
     const avatarUrl = computed(() => aliUrlPrefix.concat(avatarFilename.value ? avatarFilename.value : defaultUserAvatarFilename))
@@ -36,7 +37,6 @@ export const useUserStore = defineStore('user', () => {
         token.value = newToken
         refreshToken.value = newRefreshToken
     }
-    //登出时要记得前往登录页
     function logout(){
         token.value = null
         refreshToken.value = null
@@ -47,6 +47,7 @@ export const useUserStore = defineStore('user', () => {
         isSeller.value = null
         isDeliveryMan.value = null
         avatarFilename.value = null
+        router.push({name: 'Login'})//登出时前往登录页
     }
     return {
         token, refreshToken, username, setUsername, id, phone, addresses, setAddresses, hasAddress, isSeller, setSeller, isDeliveryMan, avatarUrl,

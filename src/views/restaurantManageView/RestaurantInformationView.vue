@@ -1,4 +1,5 @@
 <script setup>
+    import { devPrefix } from '@/network/axios-instance';
     import { useRestaurantStore } from '@/stores/restaurant';
     import { useUserStore } from '@/stores/user';
     import { genFileId } from 'element-plus';
@@ -28,7 +29,7 @@
         <el-image :src="avatarUrl" :style="imageStyle" />
         <el-upload
             method="put"
-            action="/api/restaurant/upload/image"
+            :action="`${devPrefix}/restaurant/upload/image`"
             :headers="{ Authorization: `Bearer ${token}` }"
             :auto-upload="false"
             v-model:file-list="uploadImage"

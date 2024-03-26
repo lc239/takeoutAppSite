@@ -1,139 +1,178 @@
 import instance from "@/network/axios-instance"
+import { defaultHandlers } from "@/network/axios-instance"
 import { useRestaurantStore } from "@/stores/restaurant"
 import { useUserStore } from "@/stores/user"
 import { ElMessage } from "element-plus"
 
-export function getRestaurant(onSucceed = restaurant => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function getRestaurant(handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.get('/restaurant/info').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { setRestaurant } = useRestaurantStore()
                 setRestaurant(res.data.data) //服务器的数据给store
-                onSucceed(res.data.data)
+                curHandlers.onSucceed(res.data.data)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function getRestaurantByRestaurantId(restaurantId, onSucceed = restaurant => {}, onFailed = msg => ElMessage(msg), onError = err => {}) {
+export function getRestaurantById(restaurantId, handlers = {}) {
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.get(`/restaurant/info/${restaurantId}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                onSucceed(res.data.data)
+                curHandlers.onSucceed(res.data.data)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function register(registerForm, onSucceed = restaurant => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function getRestaurantsByPage(pageOffset, pageSize, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.get(`/restaurant/info/${pageOffset}/${pageSize}`).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }
+            else {
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function searchRestaurantByPrefix(prefix, size, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.get(`/restaurant/search/${size}/${prefix}`).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                if(res.data.data.length === 0){
+                    curHandlers.onFailed(res.data.message)
+                }else{
+                    curHandlers.onSucceed(res.data.data)
+                }
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function register(registerForm, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.post('/restaurant/register', registerForm).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                const { init } = useRestaurantStore()
+                const { setRestaurant } = useRestaurantStore()
                 const { setSeller } = useUserStore()
-                init(res.data.data) //注册后初始化store
+                setRestaurant(res.data.data) //注册后初始化store
                 setSeller(true) //修改身份
-                onSucceed(res.data.data)
+                curHandlers.onSucceed(res.data.data)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function addCategory(name, onSucceed = name => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function addCategory(name, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.patch(`/restaurant/category/add/${name}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { addCategory } = useRestaurantStore()
                 addCategory(name)
-                onSucceed(name)
+                curHandlers.onSucceed(name)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function deleteCategory(index, onSucceed = index => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function deleteCategory(index, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.patch(`/restaurant/category/delete/${index}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { deleteCategory } = useRestaurantStore()
                 deleteCategory(index)
-                onSucceed(index)
+                curHandlers.onSucceed(index)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function updateCategory(index, name, onSucceed = (index, name) => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function updateCategory(index, name, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.patch(`/restaurant/category/update/${index}/${name}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { updateCategoryName } = useRestaurantStore()
                 updateCategoryName(index, name)
-                onSucceed(index, name)
+                curHandlers.onSucceed(index, name)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function addMenu(menu, categoryIndex, onSucceed = (menu, categoryIndex) => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function addMenu(menu, categoryIndex, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.patch(`/restaurant/menu/add/${categoryIndex}`, menu).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { addMenu } = useRestaurantStore()
                 addMenu(menu, categoryIndex)
-                onSucceed(menu, categoryIndex)
+                curHandlers.onSucceed(menu, categoryIndex)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function deleteMenu(categoryIndex, menuIndex, onSucceed = (categoryIndex, menuIndex) => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function deleteMenu(categoryIndex, menuIndex, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.patch(`/restaurant/menu/delete/${categoryIndex}/${menuIndex}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { deleteMenu } = useRestaurantStore()
                 deleteMenu(categoryIndex, menuIndex)
-                onSucceed(categoryIndex, menuIndex)
+                curHandlers.onSucceed(categoryIndex, menuIndex)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function updateMenu(menu, categoryIndex, menuIndex, onSucceed = (menu, categoryIndex) => {}, onFailed = msg => ElMessage(msg), onError = err => {}){
+export function updateMenu(menu, categoryIndex, menuIndex, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.patch(`/restaurant/menu/update/${categoryIndex}/${menuIndex}`, menu).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { updateMenu } = useRestaurantStore()
                 updateMenu(menu, categoryIndex, menuIndex)
-                onSucceed(categoryIndex, menuIndex)
+                curHandlers.onSucceed(categoryIndex, menuIndex)
             }
             else {
-                onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(onError)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }

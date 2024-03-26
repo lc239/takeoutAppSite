@@ -1,5 +1,6 @@
 <script setup>
     import { aliUrlPrefix, defaultMenuImgFilename } from '@/js/aliOssConfig';
+    import { devPrefix } from '@/network/axios-instance'
     import { fenToYuan } from '@/js/unit'
     import { computed, ref, watch } from 'vue';
     import { useAreaIn } from '@/js/mouse';
@@ -61,7 +62,7 @@
                         :on-success="handleImageUploadSuccess"
                         :on-exceed="handleImageUploadExceed"
                         :before-upload="handleBeforeImageUpload"
-                        :action="`/api/restaurant/menu/upload/image/${props.categoryIndex}/${props.menuIndex}`"
+                        :action="`${devPrefix}/restaurant/menu/upload/image/${props.categoryIndex}/${props.menuIndex}`"
                         method="put"
                         :headers="{ Authorization: `Bearer ${token}` }">
                         <el-button size="small" type="info" round>更改图片</el-button>
@@ -79,7 +80,7 @@
     </el-card>
 </template>
 
-<style>
+<style scoped>
 .menu-card .card-header{
     display: flex;
     align-items: center;

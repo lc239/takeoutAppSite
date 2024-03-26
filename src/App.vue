@@ -4,7 +4,7 @@
     import { getInfo } from '@/network/userApi';
 
     onBeforeMount(() => {
-        //进入首页获取信息，失败自动登出去登录页面
+        //进入首页获取信息
         getInfo()
     })
 </script>
@@ -15,12 +15,16 @@
             <TopNav/>
         </el-header>
         <el-main>
-            <RouterView></RouterView>
+            <RouterView v-slot="{ Component }">
+                <KeepAlive include="HomeView">
+                    <component :is="Component"></component>
+                </KeepAlive>
+            </RouterView>
         </el-main>
     </el-container>
 </template>
 
-<style scoped>
+<style>
     .top-nav {
         padding: 6px 10px;
         width: 100%;

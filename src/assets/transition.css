@@ -7,3 +7,14 @@
 .fade-leave-to {
   opacity: 0;
 }
+
+.fadedown-enter-active,
+.fadedown-leave-active{
+  transition: opacity 0.4s, transform 0.4s;
+}
+
+.fadedown-enter-from,
+.fadedown-leave-to{
+  opacity: 0;
+  transform: translateY(-10px);
+}

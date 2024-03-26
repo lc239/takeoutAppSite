@@ -16,10 +16,12 @@
             inputPattern: /^\S{1,10}$/,
             inputErrorMessage: '请输入10个字以内(不能使用空白符)'
         }).then(({value}) => {
-            addCategory(value, () => ElMessage({
-                type: 'success',
-                message: '添加成功'
-            }))
+            addCategory(value,{
+                onSucceed: res => ElMessage({
+                    type: 'success',
+                    message: '添加成功'
+                })
+            })
         })
     }
     function handleDeleteCategory(index){
@@ -28,10 +30,12 @@
             cancelButtonText: '取消',
             type: 'warning'
         }).then(() => {
-            deleteCategory(index, index => ElMessage({
-                type: 'success',
-                message: '删除成功'
-            }))
+            deleteCategory(index, {
+                onSucceed: res => ElMessage({
+                    type: 'success',
+                    message: '删除成功'
+                })
+            })
         })
     }
     function handleUpdateCategoryName(index){
@@ -39,15 +43,23 @@
             confirmButtonText: '提交',
             cancelButtonText: '取消',
         }).then(({value}) => {
-            updateCategory(index, value, () => ElMessage({
-                type: 'success',
-                message: '修改成功'
-            }))
+            updateCategory(index, value, {
+                onSucceed: res => ElMessage({
+                    type: 'success',
+                    message: '修改成功'
+                })
+            })
         })
     }
     let add = true //如果是添加菜单就是true，是修改就是false
     const menuDialogVisible = ref(false)
-    const menuForm = ref({name: '', price: 0, description: '', categoryIndex: 0, menuIndex: 0})
+    const menuForm = ref({
+        name: '',
+        price: 0,
+        description: '',
+        categoryIndex: 0,
+        menuIndex: 0
+    })
     function handleAddMenu(index){
         menuForm.value.categoryIndex = index
         add = true
@@ -56,25 +68,27 @@
     function handleMenuSubmit(){
         const {categoryIndex, menuIndex, ...menu} = menuForm.value
         menu.price = yuanToFen(menu.price)
-        if(!checkMenuName(menu.name, categoryIndex)) ElMessage('名称不能重复或为空')
-        else {
-            if (add) {
-                addMenu(menu, categoryIndex, () => {
+        if (add) {
+            if (!checkMenuName(menu.name, categoryIndex)) ElMessage('名称不能重复或为空')
+            addMenu(menu, categoryIndex,{
+                onSucceed: res => {
                     ElMessage({
                         type: 'success',
                         message: '添加成功'
                     })
                     menuDialogVisible.value = false
-                })
-            }else{
-                updateMenu(menu, categoryIndex, menuIndex, () => {
+                }
+            })
+        } else {
+            updateMenu(menu, categoryIndex, menuIndex, {
+                onSucceed: res => {
                     ElMessage({
                         type: 'success',
                         message: '修改成功'
                     })
                     menuDialogVisible.value = false
-                })
-            }
+                }
+            })
         }
     }
     function handleDeleteMenu(categoryIndex, menuIndex){
@@ -83,16 +97,17 @@
             cancelButtonText: '取消',
             type: 'warning'
         }).then(() => {
-            deleteMenu(categoryIndex, menuIndex, () => ElMessage({
-                type: 'success',
-                message: '删除成功'
-            }))
+            deleteMenu(categoryIndex, menuIndex,{
+                onSucceed: res => ElMessage({
+                    type: 'success',
+                    message: '删除成功'
+                })
+            })
         })
     }
     function handleUpdateMenu(menu, categoryIndex, menuIndex){
         add = false
-        menu.price = Number(fenToYuan(menu.price)) //转换成dialog的input对应数据类型
-        menuForm.value = {...menu, categoryIndex, menuIndex}
+        menuForm.value = {...menu, categoryIndex, menuIndex, price: fenToYuan(menu.price)}
         menuDialogVisible.value = true
     }
 </script>
@@ -120,9 +135,9 @@
                         <template #footer>
                             <div class="menu-card-footer">
                                 <el-button type="primary"
-                                    @click="handleUpdateMenu(menu, categoryIndex, menuIndex)">修改菜品信息</el-button>
+                                    @click="() => handleUpdateMenu(menu, categoryIndex, menuIndex)">修改菜品信息</el-button>
                                 <el-button type="danger"
-                                    @click="handleDeleteMenu(categoryIndex, menuIndex)">删除此菜品</el-button>
+                                    @click="() => handleDeleteMenu(categoryIndex, menuIndex)">删除此菜品</el-button>
                             </div>
                         </template>
                     </MenuCard>
@@ -146,7 +161,7 @@
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="() => menuDialogVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleMenuSubmit()">提交</el-button>
+                <el-button type="primary" @click="() => handleMenuSubmit()">提交</el-button>
             </div>
         </template>
     </el-dialog>

@@ -16,3 +16,9 @@
 .clickable-icon:hover{
     color: var(--el-color-primary-light-3);
 }
+.vertical-position-parent{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

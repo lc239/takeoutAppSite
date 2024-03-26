@@ -5,6 +5,7 @@
     import { useAreaIn } from '@/js/mouse'
     import { getInfo, modifyUsername } from '@/network/userApi'
     import { genFileId, ElMessage } from 'element-plus'
+    import { devPrefix } from '@/network/axios-instance'
     const { avatarUrl, username, isSeller, isDeliveryMan, token } = storeToRefs(useUserStore())
     const avatarArea = ref(null)
     const inAvatarArea = useAreaIn(avatarArea)
@@ -21,15 +22,18 @@
         updateUsernameSuccess.value = false
         editingUsername.value = false
         requestingUsername.value = true
-        modifyUsername(username.value, () => {
-            updateUsernameSuccess.value = true
-            usernameTimer = setTimeout(() => {
-                requestingUsername.value = false
-                updateUsernameSuccess.value = false
-            }, 500)
-            oldUsername = username.value
-        }, () => {
-            username.value = oldUsername
+        modifyUsername(username.value, {
+            onSucceed: res => {
+                updateUsernameSuccess.value = true
+                usernameTimer = setTimeout(() => {
+                    requestingUsername.value = false
+                    updateUsernameSuccess.value = false
+                }, 500)
+                oldUsername = username.value
+            },
+            onFailed: msg => {
+                username.value = oldUsername
+            }
         })
     }
     let oldUsername = username.value //响应是失败就把这个赋值回去
@@ -69,7 +73,7 @@
                                 :on-success="handleAvatarUploadSuccess"
                                 :on-exceed="handleAvatarUploadExceed"
                                 :before-upload="handleBeforeAvatarUpload"
-                                action="/api/user/upload/avatar" method="put"
+                                :action="`${devPrefix}/user/upload/avatar`" method="put"
                                 :headers="{ Authorization: `Bearer ${token}` }">
                                 <el-button size="small" type="info" round>更改头像</el-button>
                             </el-upload>

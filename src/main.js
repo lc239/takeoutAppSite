@@ -1,5 +1,5 @@
-import '@/assets/base.css';
-import '@/assets/class.css';
+import '@/assets/base.css'
+import '@/assets/class.css'
 import '@/assets/transition.css'
 
 import { createApp } from 'vue'
