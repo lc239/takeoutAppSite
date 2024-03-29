@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { aliUrlPrefix, defaultUserAvatarFilename } from '@/js/aliOssConfig'
 import { defineStore } from 'pinia'
 import router from '@/router'
+import dayjs from 'dayjs'
 
 export const useUserStore = defineStore('user', () => {
 
@@ -14,6 +15,9 @@ export const useUserStore = defineStore('user', () => {
     const addresses = ref(null)
     function setAddresses(newAddresses){
         addresses.value = newAddresses.slice()
+    }
+    function addAddress(address){
+        addresses.value?.push(address)
     }
     const hasAddress = computed(() => addresses.value?.length > 0)
     const isSeller = ref(false)
@@ -49,9 +53,52 @@ export const useUserStore = defineStore('user', () => {
         avatarFilename.value = null
         router.push({name: 'Login'})//登出时前往登录页
     }
+    const ws = ref(null)
+    function openWs(){
+        ws.value = new WebSocket(`ws://localhost:8080/wsp?id=${id.value}`)
+        ws.value.addEventListener('open', e => {
+            console.log('成功')
+            window.onbeforeunload = () => {
+                ws.value.close()
+            }
+        })
+        ws.value.addEventListener('message', e => {
+            console.log(e)
+            const msg = JSON.parse(e.data)
+            msg.time = dayjs(msg.time)
+            msgs.value.push(msg)
+        })
+        ws.value.addEventListener('error', e => {
+            console.log(e)
+        })
+        ws.value.addEventListener('close', e => {
+            console.log(e)
+        })
+    }
+    //0是用户下单时发，1是店铺接单时发
+    function sendWs(type, targetId){
+        const request = JSON.stringify({
+            type,
+            targetId
+        })
+        ws.value.send(request)
+    }
+    const msgs = ref([])
+    const msgDrawer = ref(false)
+    const showMsgDrawer = () => {msgDrawer.value = true;console.log(msgs.value)}
+    function checkMsgs(){
+        msgs.value = msgs.value.filter(msg => {
+            if(msg.type === 0) return msg.time.diff(dayjs(), 'm', true) < 10 //订单要求10分钟内接
+            else return true
+        })
+    }
+    function removeMsg(index){
+        msgs.value.splice(index, 1)
+    }
+
     return {
-        token, refreshToken, username, setUsername, id, phone, addresses, setAddresses, hasAddress, isSeller, setSeller, isDeliveryMan, avatarUrl,
-        isLogin, setTokens, setInfo, logout
+        token, refreshToken, username, setUsername, id, phone, addresses, addAddress, setAddresses, hasAddress, isSeller, setSeller, isDeliveryMan, avatarUrl,
+        isLogin, setTokens, setInfo, logout, ws, openWs, sendWs, msgs, msgDrawer, checkMsgs, removeMsg, showMsgDrawer
     }
 }, {
     persist: {

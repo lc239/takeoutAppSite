@@ -8,8 +8,8 @@
     import { averageToFixed } from '@/js/unit'
     import { useRouter } from 'vue-router'
 
-    const { avatarUrl, isLogin } = storeToRefs(useUserStore())
-    const { logout } = useUserStore()
+    const { avatarUrl, isLogin, msgs } = storeToRefs(useUserStore())
+    const { logout, showMsgDrawer } = useUserStore()
     const router = useRouter()
     const searchContent = ref('')
     const waitingSearchRes = ref(false)
@@ -88,7 +88,7 @@
                 <el-avatar class="avatar" :src="avatarUrl" />
                 <template #hover-to-show>
                     <div class="avatar-in-content">
-                        <el-button @click="() => logout()">退出登录</el-button>
+                        <el-button @click="logout()">退出登录</el-button>
                     </div>
                 </template>
             </HoverArea>
@@ -103,8 +103,8 @@
         </div>
         <div class="nav-extra">
             <!-- 把这里的新消息绑定 -->
-            <el-badge :value="1">
-                <el-icon :size="30">
+            <el-badge :value="msgs.length" :show-zero="false">
+                <el-icon :size="30" @click="showMsgDrawer()" class="clickable-icon">
                     <Message />
                 </el-icon>
             </el-badge>

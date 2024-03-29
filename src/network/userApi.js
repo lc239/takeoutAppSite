@@ -86,3 +86,31 @@ export function getOrders({pageOffset, pageSize}, handlers = {}) {
         }
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
+
+export function putOrder(order, restaurantId, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.put(`/user/order/put/${restaurantId}`, order).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }else{
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function addAddress(address, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.patch('/user/address/add', address).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                const { addAddress } = useUserStore()
+                addAddress(address)
+                curHandlers.onSucceed(res.data.data)
+            }else{
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}

@@ -15,6 +15,10 @@ export function instantToFormat(instant, format = 'YYYY/MM/DD/HH:mm:ss'){
     return dayjs(instant).format(format)
 }
 
+export function dayjsToFormat1(date){
+    return date.format('HH:mm:ss')
+}
+
 //13.2, 4, 1 -> 3.3
 export function averageToFixed(numerator, denominator, fraction = 0){
     if(denominator === 0) return 0

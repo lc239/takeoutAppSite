@@ -5,7 +5,7 @@
     import { ShoppingCart } from '@element-plus/icons-vue'
     import { fenToYuan } from '@/js/unit';
 
-    const { categories, selectedCategory, totalPrice } = storeToRefs(useShoppingStore())
+    const { categories, selectedCategory, totalPrice, currentCategoryIndex } = storeToRefs(useShoppingStore())
     const { setCurCategoryIndex, showShoppingDialog } = useShoppingStore()
 </script>
 
@@ -20,7 +20,7 @@
         </el-aside>
         <el-main v-if="selectedCategory?.menus?.length" class="category-view">
             <!-- 待加滚动，防止购物车图标挡住 -->
-            <MenuCard v-for="menu of selectedCategory.menus" :menu="menu" class="menu-card" />
+            <MenuCard v-for="menu of selectedCategory.menus" :menu="menu" :category-index="currentCategoryIndex" class="menu-card" />
         </el-main>
         <el-main v-else>这个分类不存在哦</el-main>
     </el-container>

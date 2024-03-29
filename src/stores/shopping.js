@@ -3,6 +3,7 @@ import { computed, ref } from "vue";
 
 export const useShoppingStore = defineStore('shopping', () => {
     const restaurant = ref({
+        id: '',
         name: '',
         introduction: '',
         imageFilename: '',
@@ -14,28 +15,45 @@ export const useShoppingStore = defineStore('shopping', () => {
     })
     const categories = computed(() => restaurant.value.categories)
     const setRestaurant = r => {
+        r.categories.forEach((category, index) => category.menus.forEach(menu => menu.categoryIndex = index)) //为menu设置categoryIndex方便处理
         restaurant.value = r
-        console.log(restaurant.value)
     }
     const currentCategoryIndex = ref(0)
     const setCurCategoryIndex = i => currentCategoryIndex.value = i
     const selectedCategory = computed(() => restaurant.value.categories[currentCategoryIndex.value])
-    const shoppingCar = ref(new Map())
+    const shoppingCar = ref(new Map()) //Map(menu, num)
+    const menus = computed(() => Array.from(shoppingCar.value.keys()))
     const addMenu = menu => shoppingCar.value.set(menu, (shoppingCar.value.get(menu) + 1) || 1)
     const removeMenu = menu => {
-        const c = shoppingCar.value.get(menu)
-        if(c === 1) shoppingCar.value.delete(menu)
-        else shoppingCar.value.set(menu, (c - 1))
+        const num = shoppingCar.value.get(menu)
+        if(num > 1) shoppingCar.value.set(menu, num - 1)
+        else shoppingCar.value.delete(menu)
     }
     const clearShoppingCar = () => shoppingCar.value.clear()
     const getMenuCount = menu => shoppingCar.value.get(menu) || 0
-    const totalPrice = computed(() => menusWithNum.value.reduce((c, n) => c + n[1] * n[0].price, 0))
-    const menusWithNum = computed(() => Array.from(shoppingCar.value.entries())) //[menu, num]
-    const menus = computed(() => Array.from(shoppingCar.value.keys()))
+    const totalPrice = computed(() => {
+        let res = 0
+        for(const [menu, num] of shoppingCar.value){
+            res += menu.price * num
+        }
+        return res
+    })
+    const orderedMenus = computed(() => Array.from(shoppingCar.value.entries()).map(e => {
+        return {
+            name: e[0].name,
+            price: e[0].price,
+            categoryIndex: e[0].categoryIndex,
+            num: e[1]
+        }
+    }))
 
     const shoppingDialogVisible = ref(false)
     const showShoppingDialog = () => shoppingDialogVisible.value = true
     const closeShoppingDialog = () => shoppingDialogVisible.value = false
+
+    const addAddressDialogVisible = ref(false)
+    const showAddAddressDialog = () => addAddressDialogVisible.value = true
+    const closeAddAddressDialog = () => addAddressDialogVisible.value = false
 
     function init(){
         restaurant.value = {
@@ -54,6 +72,7 @@ export const useShoppingStore = defineStore('shopping', () => {
     }
     return {
         restaurant, setRestaurant, categories, currentCategoryIndex, setCurCategoryIndex, selectedCategory, shoppingCar, init,
-        addMenu, removeMenu, menus, getMenuCount, totalPrice, shoppingDialogVisible, showShoppingDialog, closeShoppingDialog, clearShoppingCar
+        addMenu, removeMenu, menus, orderedMenus, getMenuCount, totalPrice, clearShoppingCar,
+        shoppingDialogVisible, showShoppingDialog, closeShoppingDialog, addAddressDialogVisible, showAddAddressDialog, closeAddAddressDialog
     }
 })

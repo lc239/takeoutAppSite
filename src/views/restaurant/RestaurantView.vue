@@ -3,8 +3,9 @@
     import { storeToRefs } from 'pinia'
     import { useShoppingStore } from '@/stores/shopping'
     import ShoppingDialog from '@/components/restaurantPage/ShoppingDialog.vue'
+    import AddAddressDialog from '@/components/userCenter/AddAddressDialog.vue'
 
-    const { restaurant } = storeToRefs(useShoppingStore())
+    const { restaurant, addAddressDialogVisible } = storeToRefs(useShoppingStore())
 
     // watch(
     //     () => route.params.id,
@@ -38,6 +39,7 @@
         <RouterView/>
     </el-container>
     <ShoppingDialog/>
+    <AddAddressDialog v-model="addAddressDialogVisible"/>
 </template>
 
 <style>

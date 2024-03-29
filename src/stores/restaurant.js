@@ -44,6 +44,7 @@ export const useRestaurantStore = defineStore('restaurant', () => {
         categories.value = restaurant.categories
         avatarFilename.value = restaurant.imageFilename
     }
+
     return{
         id, name, setName, introduction, setAvatarFilename, avatarUrl, averageRate, setRestaurant,
         categories, addCategory, deleteCategory, updateCategoryName, addMenu, checkMenuName, deleteMenu, updateMenu, setMenuImageFilename

@@ -16,8 +16,8 @@
             <span class="menu-price">{{ fenToYuan(menu.price) + '元' }}</span>
             <span class="menu-count">
                 <span style="margin-right: 10px;">{{ getMenuCount(props.menu) }}</span>
-                <el-button :icon="Plus" circle @click="() => addMenu(props.menu)"></el-button>
                 <el-button v-if="getMenuCount(props.menu)" circle :icon="Minus" @click="() => removeMenu(props.menu)"></el-button>
+                <el-button :icon="Plus" circle @click="() => addMenu(props.menu)"></el-button>
             </span>
         </div>
     </div>

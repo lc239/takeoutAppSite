@@ -2,11 +2,12 @@ import axios from "axios"
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import { ElMessage } from "element-plus"
 
 export const defaultHandlers = {
     onSucceed: res => {}, //api的实现不一定是返回一个参数，也不一定返回哪个参数，具体看方法内部的调用
     onFailed: msg => ElMessage.error(msg),
-    onError: err => {},
+    onError: err => ElMessage.error('请检查网络或重新登录'),
     onFinally: () => {}
 }
 
@@ -31,7 +32,8 @@ instance.interceptors.response.use(response => {
 }, error => {
     if(error.response){
         //token失效
-        if(error.response.status === 401){
+        if(error.config.url === '/user/refresh') return Promise.reject(error)
+        else if(error.response.status === 401){
             const { refreshToken } = storeToRefs(useUserStore())
             if(refreshToken.value){
                 return instance.get('/user/refresh', {headers:{

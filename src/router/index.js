@@ -103,7 +103,6 @@ const router = createRouter({
 
 //未登录强制前往登录页面
 router.beforeEach((to, from) => {
-  console.log(to, from)
   const { isLogin } = storeToRefs(useUserStore())
   if(to.name === 'Login') return true
   if(!isLogin.value) return {name: 'Login'}

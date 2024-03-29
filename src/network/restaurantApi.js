@@ -176,3 +176,17 @@ export function updateMenu(menu, categoryIndex, menuIndex, handlers = {}){
         }
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
+
+export function getNotTakenOrder(id, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.get(`/restaurant/order/take/${id}`, menu).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }
+            else {
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}

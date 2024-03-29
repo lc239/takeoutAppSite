@@ -4,4 +4,26 @@ oss图片缓存
 nginx的css，js缓存
 待设置：
 用户信息缓存等响应缓存
-2.css优化
+2.html优化
+图片和视频加载优化
+使用媒体查询的响应式设计，切换图片，主题
+图片懒加载，使用img，iframe元素的loading属性，video的preload属性
+使用link的preload提前获取图片等资源
+3.css优化
+删除不必要的样式
+link标签使用media查询，防止不匹配的css阻塞渲染
+简化选择器
+减少将样式应用于不必要的元素，比如通配符之类的
+使用css精灵图
+控制动画的属性防止回流，不要使用比如width,border,padding；margin,top；align-items,flex；box-shadow等，使用CSS变换模块(transform等)，opacity，filter。
+使用GPU进行动画处理
+    3D变换动画比如transform: translateZ()，rotate3d()；
+    position：fixed
+    will-change
+    特定的在自己层渲染的元素包括video，canvas，iframe
+字体加载在font-family应用到元素时加载而不是@font-face，使用preload提前加载关键字体；使用js加载字体
+4.js优化
+减少无用代码
+移除事件监听，使用事件委托
+5.跨浏览器，移动端适配
+重置或规范化css，根据reset.css; normalize.css，直接使用或修改
