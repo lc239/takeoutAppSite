@@ -30,6 +30,6 @@
 <template>
     <el-card class="message-card" :body-style="bodyStyle" shadow="hover" @click="handleClickCard()">
         <span>{{ text }}</span>
-        <el-button @click="$emit('delete')" :icon="Delete"></el-button>
+        <el-button @click.stop="$emit('delete')" :icon="Delete"></el-button>
     </el-card>
 </template>

@@ -4,7 +4,6 @@ import { useUserStore } from "@/stores/user"
 import { storeToRefs } from "pinia"
 import router from "@/router"
 
-//未认证在onError里
 export function getInfo(handlers = {}){
     const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.get('/user/info').then(res => {
@@ -28,22 +27,25 @@ export function login(loginInfo, handlers = {}){
     instance.post('/user/login', loginInfo).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                const { setTokens } = useUserStore()
+                const { setTokens, openWs } = useUserStore()
                 setTokens(res.data.data.token, res.data.data.refreshToken)
-                getInfo({ onSucceed: () => router.push('/') }) //登录成功获取一次用户信息
-                handlers.onSucceed()
+                //登录成功获取一次用户信息
+                getInfo({onSucceed: () => {
+                    router.push('/')
+                    openWs() //开启websocket
+                }})
+                curHandlers.onSucceed()
             }
             else {
-                handlers.onFailed(res.data.message)
+                curHandlers.onFailed(res.data.message)
             }
         }
-    }).catch(handlers.onError).finally(handlers.onFinally)
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
 export function register(registerInfo, handlers = {}){
     const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.post('/user/register', registerInfo).then(res => {
-        console.log(res)
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { setTokens } = useUserStore()

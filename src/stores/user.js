@@ -3,6 +3,7 @@ import { aliUrlPrefix, defaultUserAvatarFilename } from '@/js/aliOssConfig'
 import { defineStore } from 'pinia'
 import router from '@/router'
 import dayjs from 'dayjs'
+import { ElNotification } from 'element-plus'
 
 export const useUserStore = defineStore('user', () => {
 
@@ -23,6 +24,7 @@ export const useUserStore = defineStore('user', () => {
     const isSeller = ref(false)
     const setSeller = aBoolean => isSeller.value = aBoolean
     const isDeliveryMan = ref(false)
+    const setDeliveryMan = aBoolean => isDeliveryMan.value = aBoolean
     const avatarFilename = ref(null)
 
     const avatarUrl = computed(() => aliUrlPrefix.concat(avatarFilename.value ? avatarFilename.value : defaultUserAvatarFilename))
@@ -51,7 +53,8 @@ export const useUserStore = defineStore('user', () => {
         isSeller.value = null
         isDeliveryMan.value = null
         avatarFilename.value = null
-        router.push({name: 'Login'})//登出时前往登录页
+        router.push({name: 'Login'}) //登出时前往登录页
+        if(ws.value) ws.value.close() //关闭websocket
     }
     const ws = ref(null)
     function openWs(){
@@ -66,7 +69,30 @@ export const useUserStore = defineStore('user', () => {
             console.log(e)
             const msg = JSON.parse(e.data)
             msg.time = dayjs(msg.time)
-            msgs.value.push(msg)
+            switch (msg.type) {
+                case 0:
+                    ElNotification({
+                        title: '您有新订单'
+                    })
+                    newMsgNum.value++
+                    msgs.value.push(msg) //根据类型展示之前先只展示这些消息；考虑换成unshift
+                    break
+                case 1:
+                    ElNotification({
+                        title: '商家已接单',
+                        duration: 0
+                    })
+                    break
+                case 2:
+                    ElNotification({
+                        title: '您的订单被拒绝了',
+                        duration: 0
+                    })
+                    break
+            
+                default:
+                    break;
+            }
         })
         ws.value.addEventListener('error', e => {
             console.log(e)
@@ -75,15 +101,16 @@ export const useUserStore = defineStore('user', () => {
             console.log(e)
         })
     }
-    //0是用户下单时发，1是店铺接单时发
-    function sendWs(type, targetId){
-        const request = JSON.stringify({
-            type,
-            targetId
-        })
-        ws.value.send(request)
-    }
+    // function sendWs(type, targetId){
+    //     const request = JSON.stringify({
+    //         type,
+    //         targetId
+    //     })
+    //     ws.value.send(request)
+    // }
     const msgs = ref([])
+    const newMsgNum = ref(0)
+    const resetNewMsg = () => newMsgNum.value = 0
     const msgDrawer = ref(false)
     const showMsgDrawer = () => {msgDrawer.value = true;console.log(msgs.value)}
     function checkMsgs(){
@@ -92,13 +119,22 @@ export const useUserStore = defineStore('user', () => {
             else return true
         })
     }
-    function removeMsg(index){
-        msgs.value.splice(index, 1)
-    }
+    const removeMsgAt = index => msgs.value.splice(index, 1)
+    const removeCheckingMsg = () => removeMsgAt(checkingMsgIndex.value)
+    const checkingMsgIndex = ref(0)
+
+    const orderDialogVisible = ref(false)
+    const showOrderDialog = () => orderDialogVisible.value = true
+    const closeOrderDialog = () => orderDialogVisible.value = false
+    const checkingOrderId = ref('')
+    
+    const setCheckingMsgIndex = i => checkingMsgIndex.value = i
+    const setOrderId = id => checkingOrderId.value = id
 
     return {
-        token, refreshToken, username, setUsername, id, phone, addresses, addAddress, setAddresses, hasAddress, isSeller, setSeller, isDeliveryMan, avatarUrl,
-        isLogin, setTokens, setInfo, logout, ws, openWs, sendWs, msgs, msgDrawer, checkMsgs, removeMsg, showMsgDrawer
+        token, refreshToken, username, setUsername, id, phone, addresses, addAddress, setAddresses, hasAddress, isSeller, setSeller, isDeliveryMan, setDeliveryMan, avatarUrl,
+        isLogin, setTokens, setInfo, logout, ws, openWs, msgs, newMsgNum, resetNewMsg, msgDrawer, checkMsgs, removeMsgAt, showMsgDrawer, removeCheckingMsg,
+        checkingOrderId, setOrderId, orderDialogVisible, showOrderDialog, closeOrderDialog, checkingMsgIndex, setCheckingMsgIndex
     }
 }, {
     persist: {

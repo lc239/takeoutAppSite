@@ -12,6 +12,7 @@ export function yuanToFen(yuan){
 
 //2024-03-08T11:10:27Z -> 2024/03/08/11:10:27
 export function instantToFormat(instant, format = 'YYYY/MM/DD/HH:mm:ss'){
+    if(!instant) return '无'
     return dayjs(instant).format(format)
 }
 

@@ -10,13 +10,15 @@ const UserView = () => import('@/views/userView/UserView.vue')
 const UserInformationView = () => import('@/views/userView/UserInformationView.vue')
 const UserHistoryView = () => import('@/views/userView/UserHistoryView.vue')
 const RestaurantHistoryView = () => import('@/views/userView/RestaurantHistoryView.vue')
-const DeliveryHistoryView = () => import('@/views/userView/DeliveryHistoryView.vue')
 const RestaurantManageView = () => import('@/views/restaurantManageView/RestaurantManageView.vue')
 const RestaurantInformationView = () => import('@/views/restaurantManageView/RestaurantInformationView.vue')
 const MenuManagementView = () => import('@/views/restaurantManageView/MenuManagementView.vue')
 const RestaurantView = () => import('@/views/restaurant/RestaurantView.vue')
 const CategoryView = () => import('@/views/restaurant/CategoryView.vue')
 const DeliveryManageView = () => import('@/views/delivery/DeliveryManageView.vue')
+const DeliveryInformationView = () => import('@/views/delivery/DeliveryInformationView.vue')
+const DeliveryHistoryView = () => import('@/views/delivery/DeliveryHistoryView.vue')
+const TakeOrderView = () => import('@/views/delivery/TakeOrderView.vue')
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -50,11 +52,6 @@ const router = createRouter({
           path: 'restaurantHistory',
           name: 'RestaurantHistory',
           component: RestaurantHistoryView
-        },
-        {
-          path: 'deliveryHistory',
-          name: 'DeliveryHistory',
-          component: DeliveryHistoryView
         }
       ]
     },
@@ -78,7 +75,24 @@ const router = createRouter({
     {
       path: '/deliveryCenter',
       name: 'DeliveryCenter',
-      component: DeliveryManageView
+      component: DeliveryManageView,
+      children: [
+        {
+          path: '',
+          name: 'DeliveryInformation',
+          component: DeliveryInformationView
+        },
+        {
+          path: 'order',
+          name: 'DeliveryTakeOrder',
+          component: TakeOrderView
+        },
+        {
+          path: 'history',
+          name: 'DeliveryHistory',
+          component: DeliveryHistoryView
+        }
+      ]
     },
     {
       path: '/restaurant/:id',

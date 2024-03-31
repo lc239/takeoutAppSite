@@ -2,7 +2,6 @@ import instance from "@/network/axios-instance"
 import { defaultHandlers } from "@/network/axios-instance"
 import { useRestaurantStore } from "@/stores/restaurant"
 import { useUserStore } from "@/stores/user"
-import { ElMessage } from "element-plus"
 
 export function getRestaurant(handlers = {}){
     const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
@@ -179,7 +178,35 @@ export function updateMenu(menu, categoryIndex, menuIndex, handlers = {}){
 
 export function getNotTakenOrder(id, handlers = {}){
     const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
-    instance.get(`/restaurant/order/take/${id}`, menu).then(res => {
+    instance.get(`/restaurant/order/take/${id}`).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }
+            else {
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function takeOrder(id, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.put(`/restaurant/order/take/${id}`).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }
+            else {
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function rejectOrder(id, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.delete(`/restaurant/order/delete/${id}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 curHandlers.onSucceed(res.data.data)

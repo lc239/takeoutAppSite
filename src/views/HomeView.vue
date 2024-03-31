@@ -6,18 +6,16 @@
 
     const restaurants = ref([])
     const loadView = ref(null)
-    const loading = ref(false)
     let pageOffset = 0
     const pageSize = 16
     function loadPages(){
-        loading.value = true
         getRestaurantsByPage(pageOffset, pageSize,{
             onSucceed: res => {
                 restaurants.value.push(...res)
                 pageOffset++
                 if(res.length < pageSize) loadView.value.unobserve()
             },
-            onFinally: () => loading.value = false
+            onFinally: () => loadView.value.waitNext()
         })
     }
 </script>
@@ -31,7 +29,7 @@
         <div class="restaurant-cards">
             <RestaurantCard v-for="restaurant in restaurants" :restaurant-preview="restaurant"></RestaurantCard>
         </div>
-        <LoadMoreInView :loading="loading" id="home-load-bottom" ref="loadView" @load="() => loadPages()" v-slot="slotProps" v-loading="loading">
+        <LoadMoreInView id="home-load-bottom" ref="loadView" @load="() => loadPages()" v-slot="slotProps">
             <template v-if="slotProps.observing">
                 拉到底就会刷新哦
             </template>

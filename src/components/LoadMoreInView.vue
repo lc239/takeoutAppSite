@@ -1,4 +1,5 @@
 <script setup>
+//测试加载时已经在视口的情况
     import { onMounted, ref } from 'vue';
 
     const emit = defineEmits(['load'])
@@ -7,15 +8,19 @@
             type: Number,
             default: 0.6
         },
-        loading: {
-            type: Boolean,
-            default: false
+        marginTop: {
+            type: String,
+            default: '0'
         }
     })
 
+    const loading = ref(false)
     const loadDiv = ref(null)
     const loadDivObserver = new IntersectionObserver(e => {
-        if(e[0].isIntersecting && !props.loading) emit('load')
+        if(e[0].isIntersecting && !loading.value){
+            loading.value = true
+            emit('load')
+        }
     }, { threshold: props.threshold })
 
     const observing = ref(true)
@@ -28,11 +33,14 @@
         loadDivObserver.unobserve(loadDiv.value)
         observing.value = false
     }
-    defineExpose({ unobserve })
+    function waitNext(){
+        loading.value = false
+    }
+    defineExpose({ unobserve, waitNext })
 </script>
 
 <template>
-    <div ref="loadDiv">
+    <div ref="loadDiv" v-loading="loading" :style="{marginTop: props.marginTop}">
         <slot :observing="observing"></slot>
     </div>
 </template>

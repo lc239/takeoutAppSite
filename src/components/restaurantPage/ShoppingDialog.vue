@@ -41,8 +41,8 @@
 <template>
     <el-dialog v-model="shoppingDialogVisible" title="购物车" class="shopping-dialog">
         <el-scrollbar height="400px">
-            <div class="menus">
-                <MenuCard v-for="menu of menus" class="ordered-menu" :menu="menu" />
+            <div v-for="menu of menus" class="menu">
+                <MenuCard :menu="menu" op />
                 <span v-if="!menus.length">还没有添加菜品哦</span>
             </div>
         </el-scrollbar>
@@ -61,12 +61,12 @@
     </el-dialog>
 </template>
 
-<style>
-.shopping-dialog .menus{
+<style scoped>
+.shopping-dialog .menu{
     height: 82px;
     width: 100%;
 }
-.menus > .ordered-menu{
-    margin-bottom: 10px;
+.menu + .menu{
+    margin-top: 10px;
 }
 </style>

@@ -3,7 +3,6 @@
     import { storeToRefs } from 'pinia';
     import { ref } from 'vue';
     import { getRestaurant, register } from '@/network/restaurantApi';
-    import { ElMessage } from 'element-plus';
 
     const { isSeller } = storeToRefs(useUserStore())
     if(isSeller.value) getRestaurant()

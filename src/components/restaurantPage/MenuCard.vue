@@ -4,7 +4,17 @@
     import { useShoppingStore } from '@/stores/shopping';
     import { Plus, Minus } from '@element-plus/icons-vue'
 
-    const props = defineProps(['menu'])
+    //订单里的菜单和下单时的菜单不一样，多了num属性，且不在store里不能操作，用op表示
+    //由于订单里查询到的菜单不会有图片，所以全会是默认图片，有时间会修改
+    const props = defineProps({
+        menu: {
+            type: Object
+        },
+        op: {
+            type: Boolean,
+            default: false
+        }
+    })
     const { addMenu, removeMenu, getMenuCount } = useShoppingStore()
 </script>
 
@@ -13,11 +23,14 @@
         <el-image class="menu-img" :src="getAliMenuImgUrl(props.menu.imageFilename)"/>
         <div class="menu-desc">
             <span class="menu-name">{{ menu.name }}</span>
-            <span class="menu-price">{{ fenToYuan(menu.price) + '元' }}</span>
-            <span class="menu-count">
+            <span class="menu-price">{{ '单价：' + fenToYuan(menu.price) + '元' }}</span>
+            <span v-if="props.op" class="menu-count">
                 <span style="margin-right: 10px;">{{ getMenuCount(props.menu) }}</span>
-                <el-button v-if="getMenuCount(props.menu)" circle :icon="Minus" @click="() => removeMenu(props.menu)"></el-button>
-                <el-button :icon="Plus" circle @click="() => addMenu(props.menu)"></el-button>
+                <el-button size="small" v-if="getMenuCount(props.menu)" circle :icon="Minus" @click="() => removeMenu(props.menu)"></el-button>
+                <el-button size="small" :icon="Plus" circle @click="() => addMenu(props.menu)"></el-button>
+            </span>
+            <span v-else class="menu-count">
+                <span>{{ props.menu.num }}</span>
             </span>
         </div>
     </div>

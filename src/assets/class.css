@@ -9,6 +9,7 @@
 .button-text.active{
     color: var(--button-text-active-color, var(--blue2));
 }
+
 .clickable-icon{
     cursor: pointer;
     transition: color .3s;
@@ -16,9 +17,31 @@
 .clickable-icon:hover{
     color: var(--el-color-primary-light-3);
 }
+
 .vertical-position-parent{
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.flex-space-between{
+    --flex-item-count: 3;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+}
+.flex-space-between > *{
+    flex-grow: 0;
+    flex-basis: calc(calc(100% / var(--flex-item-count)) - calc(4px * calc(var(--flex-item-count) - 1)));
+    word-break: break-all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.flex-space-between > :first-child{
+    text-align: left;
+}
+.flex-space-between > :last-child{
+    text-align: end;
 }

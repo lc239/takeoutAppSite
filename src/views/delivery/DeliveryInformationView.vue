@@ -1,0 +1,47 @@
+<script setup>
+    import { useDeliveryStore } from '@/stores/delivery'
+    import { storeToRefs } from 'pinia'
+    import OrderCard from '@/components/deliveryPage/OrderCard.vue'
+    import { completeOrder } from '@/network/deliveryApi'
+    import { ElMessageBox, ElMessage } from 'element-plus';
+
+    const { deliveringCount, completeCount, deliveringOrders } = storeToRefs(useDeliveryStore())
+    function handleComplete(orderId){
+        ElMessageBox.confirm(
+            '确定完成订单？',
+            '提示',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }
+        ).then(() => {
+            ElMessage('提交中，请稍等...')
+            completeOrder(orderId, {
+                onSucceed: () => {
+                    ElMessage({
+                        type: 'success',
+                        message: '确认成功'
+                    })
+                }
+            })
+        })
+    }
+</script>
+
+<template>
+    <el-descriptions title="个人信息" border :column="2" >
+        <el-descriptions-item label="待送餐数">
+            {{ deliveringCount }}
+        </el-descriptions-item>
+        <el-descriptions-item label="完成单数">
+            {{ completeCount }}
+        </el-descriptions-item>
+    </el-descriptions>
+    <h3>待送餐</h3>
+    <p v-show="deliveringCount === 0">还没有接单哦</p>
+    <div v-for="order of deliveringOrders" class="order-wrapper">
+        <OrderCard :order="order" />
+        <el-button type="primary" @click="handleComplete()">确认完成</el-button>
+    </div>
+</template>
