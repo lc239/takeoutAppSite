@@ -1,9 +1,13 @@
 <script setup>
+    import '@/assets/deliveryPage/common.css'
+
     import { useDeliveryStore } from '@/stores/delivery'
     import { storeToRefs } from 'pinia'
     import OrderCard from '@/components/deliveryPage/OrderCard.vue'
     import { completeOrder } from '@/network/deliveryApi'
     import { ElMessageBox, ElMessage } from 'element-plus';
+    import { onBeforeMount } from 'vue'
+    import { getDeliveringOrders } from '@/network/deliveryApi'
 
     const { deliveringCount, completeCount, deliveringOrders } = storeToRefs(useDeliveryStore())
     function handleComplete(orderId){
@@ -27,6 +31,9 @@
             })
         })
     }
+    onBeforeMount(() => {
+        getDeliveringOrders()
+    })
 </script>
 
 <template>
@@ -41,7 +48,7 @@
     <h3>待送餐</h3>
     <p v-show="deliveringCount === 0">还没有接单哦</p>
     <div v-for="order of deliveringOrders" class="order-wrapper">
-        <OrderCard :order="order" />
-        <el-button type="primary" @click="handleComplete()">确认完成</el-button>
+        <OrderCard :order="order" class="order-preview" />
+        <el-button type="primary" @click="handleComplete(order.id)">确认完成</el-button>
     </div>
 </template>

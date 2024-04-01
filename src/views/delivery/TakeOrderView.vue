@@ -1,4 +1,5 @@
 <script setup>
+    import '@/assets/deliveryPage/common.css'
 //设置刷新方法刷新本路由
     import OrderCard from '@/components/deliveryPage/OrderCard.vue'
     import LoadMoreInView from '@/components/LoadMoreInView.vue'
@@ -55,14 +56,3 @@
         </template>
     </LoadMoreInView>
 </template>
-
-<style>
-.order-wrapper{
-    display: flex;
-    align-items: center;
-    column-gap: 10px;
-}
-.order-preview{
-    flex: 1;
-}
-</style>

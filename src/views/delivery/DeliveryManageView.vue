@@ -1,17 +1,18 @@
 <script setup>
-    import { useUserStore } from '@/stores/user';
-    import { storeToRefs } from 'pinia';
-    import { ref } from 'vue';
-    import { getRestaurant } from '@/network/restaurantApi';
-    import { register } from '@/network/deliveryApi';
+    import { useUserStore } from '@/stores/user'
+    import { storeToRefs } from 'pinia'
+    import { onBeforeMount, ref } from 'vue'
+    import { register, getInfo } from '@/network/deliveryApi'
 
     const { isDeliveryMan } = storeToRefs(useUserStore())
-    if(isDeliveryMan.value) getRestaurant()
     const registering = ref(false)
     function handleRegister(){
         registering.value = true
         register()
     }
+    onBeforeMount(() => {
+        if(isDeliveryMan.value) getInfo()
+    })
 </script>
 
 <template>
@@ -35,7 +36,11 @@
                 </el-menu>
             </el-aside>
             <el-main>
-                <RouterView/>
+                <RouterView v-slot="{ Component }">
+                    <KeepAlive include="DeliveryInformationView">
+                        <component :is="Component"></component>
+                    </KeepAlive>
+                </RouterView>
             </el-main>
         </template>
     </el-container>

@@ -10,6 +10,7 @@ export function getInfo(handlers = {}){
             if(res.data.code === 0) {
                 const { setStore } = useDeliveryStore()
                 setStore(res.data.data) //服务器的数据给store
+                console.log(res.data)
                 curHandlers.onSucceed(res.data.data)
             }
             else {
@@ -56,6 +57,8 @@ export function completeOrder(orderId, handlers = {}){
     instance.patch(`/delivery/order/complete/${orderId}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
+                const { completeOrder } = useDeliveryStore()
+                completeOrder(orderId)
                 curHandlers.onSucceed(res.data.data)
             }
             else {
@@ -70,7 +73,22 @@ export function getOrders(indexStart, indexEnd, handlers = {}){
     instance.get(`/delivery/order/take/${indexStart}/${indexEnd}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                console.log(res.data.data)
+                curHandlers.onSucceed(res.data.data)
+            }
+            else {
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function getDeliveringOrders(handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.get('/delivery/order/delivering').then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                const { setDeliveringOrders } = useDeliveryStore()
+                setDeliveringOrders(res.data.data)
                 curHandlers.onSucceed(res.data.data)
             }
             else {

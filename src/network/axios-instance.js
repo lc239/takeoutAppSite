@@ -11,12 +11,10 @@ export const defaultHandlers = {
     onFinally: () => {}
 }
 
-export const devPrefix = '/api/' //测试使用，打包前换成下面的空白
-// export const devPrefix = ''
+export const BASE_URL = import.meta.env.VITE_BASE_URL
 
 const instance = axios.create({
-    // baseURL: 'http://8.130.174.243:8080/',
-    baseURL: devPrefix, //测试时跨域使用
+    baseURL: BASE_URL, 
     timeout: 5000
 })
 

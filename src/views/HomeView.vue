@@ -27,9 +27,9 @@
             此处预留做类型筛选
         </div>
         <div class="restaurant-cards">
-            <RestaurantCard v-for="restaurant in restaurants" :restaurant-preview="restaurant"></RestaurantCard>
+            <RestaurantCard v-for="restaurant in restaurants" :restaurant-preview="restaurant"/>
         </div>
-        <LoadMoreInView id="home-load-bottom" ref="loadView" @load="() => loadPages()" v-slot="slotProps">
+        <LoadMoreInView id="home-load-bottom" ref="loadView" @load="() => loadPages()" v-slot="slotProps" margin-top="10px">
             <template v-if="slotProps.observing">
                 拉到底就会刷新哦
             </template>

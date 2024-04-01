@@ -1,0 +1,11 @@
+.order-wrapper{
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+.order-wrapper + .order-wrapper{
+    margin-top: 6px;
+}
+.order-preview{
+    flex: 1;
+}

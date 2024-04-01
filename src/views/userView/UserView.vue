@@ -5,7 +5,7 @@
     import { useAreaIn } from '@/js/mouse'
     import { getInfo, modifyUsername } from '@/network/userApi'
     import { genFileId, ElMessage } from 'element-plus'
-    import { devPrefix } from '@/network/axios-instance'
+    import { BASE_URL } from '@/network/axios-instance'
     const { avatarUrl, username, isSeller, isDeliveryMan, token } = storeToRefs(useUserStore())
     const avatarArea = ref(null)
     const inAvatarArea = useAreaIn(avatarArea)
@@ -73,7 +73,7 @@
                                 :on-success="handleAvatarUploadSuccess"
                                 :on-exceed="handleAvatarUploadExceed"
                                 :before-upload="handleBeforeAvatarUpload"
-                                :action="`${devPrefix}/user/upload/avatar`" method="put"
+                                :action="`${BASE_URL}user/upload/avatar`" method="put"
                                 :headers="{ Authorization: `Bearer ${token}` }">
                                 <el-button size="small" type="info" round>更改头像</el-button>
                             </el-upload>

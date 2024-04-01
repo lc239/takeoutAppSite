@@ -1,12 +1,12 @@
 <script setup>
-    import { aliUrlPrefix, defaultMenuImgFilename } from '@/js/aliOssConfig';
-    import { devPrefix } from '@/network/axios-instance'
+    import { aliUrlPrefix, defaultMenuImgFilename } from '@/js/aliOssConfig'
+    import { BASE_URL } from '@/network/axios-instance'
     import { fenToYuan } from '@/js/unit'
-    import { computed, ref, watch } from 'vue';
-    import { useAreaIn } from '@/js/mouse';
-    import { useRestaurantStore } from '@/stores/restaurant';
-    import { useUserStore } from '@/stores/user';
-    import { storeToRefs } from 'pinia';
+    import { computed, ref } from 'vue'
+    import { useAreaIn } from '@/js/mouse'
+    import { useRestaurantStore } from '@/stores/restaurant'
+    import { useUserStore } from '@/stores/user'
+    import { storeToRefs } from 'pinia'
 
     const props = defineProps(['menuIndex', 'categoryIndex'])
     const { token } = storeToRefs(useUserStore())
@@ -62,7 +62,7 @@
                         :on-success="handleImageUploadSuccess"
                         :on-exceed="handleImageUploadExceed"
                         :before-upload="handleBeforeImageUpload"
-                        :action="`${devPrefix}/restaurant/menu/upload/image/${props.categoryIndex}/${props.menuIndex}`"
+                        :action="`${BASE_URL}restaurant/menu/upload/image/${props.categoryIndex}/${props.menuIndex}`"
                         method="put"
                         :headers="{ Authorization: `Bearer ${token}` }">
                         <el-button size="small" type="info" round>更改图片</el-button>

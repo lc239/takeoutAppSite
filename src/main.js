@@ -8,6 +8,7 @@ import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 
+//改成按需引入
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
