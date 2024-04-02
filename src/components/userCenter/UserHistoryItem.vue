@@ -3,7 +3,9 @@
     import { ref, onBeforeMount, computed } from 'vue'
     import { aliUrlPrefix } from '@/js/aliOssConfig'
     import { fenToYuan, instantToFormat } from '@/js/unit'
+    import { useUserStore } from '@/stores/user'
 
+    const { showCommentDialog } = useUserStore()
     const props = defineProps(['order'])
     const orderCreateTime = computed(() => {
         return instantToFormat(props.order.createTime)
@@ -56,9 +58,11 @@
                     <span>{{ `完成时间: ${orderCompleteTime}` }}</span>
                 </div>
             </div>
+            <div class="item-op">
+                <el-button v-if="!props.order.commentId" @click="showCommentDialog(props.order)">评价</el-button>
+            </div>
         </template>
     </el-collapse-item>
-
 </template>
 
 <style>
@@ -69,6 +73,7 @@
     padding: 0 10px;
     display: flex;
     justify-content: space-between;
+    font-weight: 600;
     width: 100%;
 }
 .user-history-item-title > .title-right{
@@ -100,5 +105,10 @@
 }
 .item-main > .menu > .menu-price{
     flex-basis: 110px;
+}
+.user-history-item .item-op{
+    display: flex;
+    justify-content: center;
+    column-gap: 6px;
 }
 </style>

@@ -7,7 +7,10 @@ import { ElMessage } from "element-plus"
 export const defaultHandlers = {
     onSucceed: res => {}, //api的实现不一定是返回一个参数，也不一定返回哪个参数，具体看方法内部的调用
     onFailed: msg => ElMessage.error(msg),
-    onError: err => ElMessage.error('请检查网络或重新登录'),
+    onError: err => {
+        console.log(err)
+        ElMessage.error('请检查网络或重新登录')
+    },
     onFinally: () => {}
 }
 

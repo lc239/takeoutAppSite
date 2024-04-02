@@ -4,16 +4,38 @@
     import { useShoppingStore } from '@/stores/shopping'
     import ShoppingDialog from '@/components/restaurantPage/ShoppingDialog.vue'
     import AddAddressDialog from '@/components/userCenter/AddAddressDialog.vue'
+    import { useRoute, useRouter } from 'vue-router';
+    import { watch } from 'vue';
+    import { getRestaurantById } from '@/network/restaurantApi';
 
-    const { restaurant, addAddressDialogVisible } = storeToRefs(useShoppingStore())
+    const { restaurant, addAddressDialogVisible, closeAddAddressDialog } = storeToRefs(useShoppingStore())
+    const { setRestaurant } = useShoppingStore()
+    const router = useRouter()
+    const route = useRoute()
 
-    // watch(
-    //     () => route.params.id,
-    //     async newId => {
-    //         console.log(newId)
-    //         getRestaurantById(newId, res => console.log(res))
-    //     }
-    // )
+    watch(
+        () => route.params.id,
+        async newId => {
+            console.log(newId)
+            getRestaurantById(newId, {
+                onSucceed: res => {
+                    setRestaurant(res)
+                }
+            })
+        }
+    )
+    function handleAddAddress(addressForm){
+        ElMessage("正在提交，请稍等")
+        addAddress(addressForm, {
+            onSucceed: () => {
+                ElMessage.success({
+                    type: 'success',
+                    message: '添加成功'
+                })
+                closeAddAddressDialog()
+            }
+        })
+    }
 </script>
 
 <template>
@@ -30,7 +52,7 @@
                 等补充
             </div>
             <div class="restaurant-ops">
-                <el-button>查看评论</el-button>
+                <el-button @click="router.push({name: 'RestaurantComment'})">查看评论</el-button>
                 <!-- el-button相邻有css加margin -->
                 <div></div>
                 <el-button>收藏此店</el-button>
@@ -39,13 +61,10 @@
         <RouterView/>
     </el-container>
     <ShoppingDialog/>
-    <AddAddressDialog v-model="addAddressDialogVisible"/>
+    <AddAddressDialog v-model="addAddressDialogVisible" @add-address="handleAddAddress"/>
 </template>
 
 <style>
-.restaurant-view{
-
-}
 .restaurant-view > .restaurant-view-header{
     height: 200px;
     width: 100%;

@@ -1,7 +1,7 @@
 <script setup>
     import { useRestaurantStore } from '@/stores/restaurant';
     import { storeToRefs } from 'pinia';
-    import { ref } from 'vue';
+    import { inject, ref } from 'vue';
     import MenuCard from "@/components/restaurantCenter/MenuCard.vue";
     import { addCategory, deleteCategory, updateCategory, addMenu, deleteMenu, updateMenu } from '@/network/restaurantApi';
     import { ElMessage, ElMessageBox } from 'element-plus';
@@ -113,38 +113,37 @@
 </script>
 
 <template>
-    <el-scrollbar>
-        <el-button @click="handleAddCategory()" style="margin-bottom: 10px;">添加分类</el-button>
-        <div v-if="!categories?.length" style="margin-top: 10px;">还没有分类哦，点击上方按钮添加一个吧</div>
-        <el-collapse v-else>
-            <el-collapse-item v-for="(category, categoryIndex) in categories" :key="category.name">
-                <template #title>
-                    <div class="category-title">
-                        <span>{{ category.name }} <el-icon title="编辑分类名"
-                                @click.stop="handleUpdateCategoryName(categoryIndex)">
-                                <Edit />
-                            </el-icon></span>
-                        <span>
-                            <el-button @click.stop="handleAddMenu(categoryIndex)">添加菜品</el-button>
-                            <el-button @click.stop="handleDeleteCategory(categoryIndex)">删除分类</el-button>
-                        </span>
-                    </div>
-                </template>
-                <div class="menu-grid">
-                    <MenuCard v-for="(menu, menuIndex) of category.menus" :key="menu.name" :category-index="categoryIndex" :menu-index="menuIndex">
-                        <template #footer>
-                            <div class="menu-card-footer">
-                                <el-button type="primary"
-                                    @click="() => handleUpdateMenu(menu, categoryIndex, menuIndex)">修改菜品信息</el-button>
-                                <el-button type="danger"
-                                    @click="() => handleDeleteMenu(categoryIndex, menuIndex)">删除此菜品</el-button>
-                            </div>
-                        </template>
-                    </MenuCard>
+    <el-button @click="handleAddCategory()" style="margin-bottom: 10px;" type="primary">添加分类</el-button>
+    <div v-if="!categories?.length" style="margin-top: 10px;">还没有分类哦，点击上方按钮添加一个吧</div>
+    <el-collapse v-else>
+        <el-collapse-item v-for="(category, categoryIndex) in categories" :key="category.name">
+            <template #title>
+                <div class="category-title">
+                    <span>{{ category.name }} <el-icon title="编辑分类名" class="clickable-icon"
+                            @click.stop="handleUpdateCategoryName(categoryIndex)">
+                            <Edit />
+                        </el-icon></span>
+                    <span>
+                        <el-button @click.stop="handleAddMenu(categoryIndex)" type="primary">添加菜品</el-button>
+                        <el-button @click.stop="handleDeleteCategory(categoryIndex)" type="danger">删除分类</el-button>
+                    </span>
                 </div>
-            </el-collapse-item>
-        </el-collapse>
-    </el-scrollbar>
+            </template>
+            <div class="menu-grid">
+                <MenuCard v-for="(menu, menuIndex) of category.menus" :key="menu.name" :category-index="categoryIndex"
+                    :menu-index="menuIndex">
+                    <template #footer>
+                        <div class="menu-card-footer">
+                            <el-button type="primary"
+                                @click="() => handleUpdateMenu(menu, categoryIndex, menuIndex)">修改菜品信息</el-button>
+                            <el-button type="danger"
+                                @click="() => handleDeleteMenu(categoryIndex, menuIndex)">删除此菜品</el-button>
+                        </div>
+                    </template>
+                </MenuCard>
+            </div>
+        </el-collapse-item>
+    </el-collapse>
     <el-dialog v-model="menuDialogVisible" width="500">
         <el-form v-model="menuForm">
             <el-form-item label="菜名">

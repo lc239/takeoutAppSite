@@ -107,8 +107,8 @@
                                 <span>历史记录</span>
                             </template>
                             <el-menu-item index="/userCenter/userHistory">我的订单</el-menu-item>
-                            <el-menu-item :disabled="!isSeller" index="/userCenter/restaurantHistory">店铺记录</el-menu-item>
-                            <el-menu-item :disabled="!isDeliveryMan" index="/userCenter/deliveryHistory">骑手记录</el-menu-item>
+                            <!-- <el-menu-item :disabled="!isSeller" index="/userCenter/restaurantHistory">店铺记录</el-menu-item>
+                            <el-menu-item :disabled="!isDeliveryMan" index="/userCenter/deliveryHistory">骑手记录</el-menu-item> -->
                         </el-sub-menu>
                     </el-menu>
                 </el-aside>

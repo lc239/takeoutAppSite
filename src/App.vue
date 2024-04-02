@@ -1,37 +1,18 @@
 <script setup>
     import TopNav from '@/components/homePage/TopNav.vue'
-    import { onBeforeMount } from 'vue'
+    import { onBeforeMount, provide } from 'vue'
     import { getInfo } from '@/network/userApi'
     import { useUserStore } from '@/stores/user'
     import { storeToRefs } from 'pinia'
     import MessageCard from '@/components/homePage/MessageCard.vue'
     import OrderDialog from '@/components/restaurantCenter/OrderDialog.vue'
     import { takeOrder, rejectOrder } from '@/network/restaurantApi'
-    import { ElMessage, ElMessageBox } from 'element-plus'
+    import { ElMessage } from 'element-plus'
     import { instantToFormat } from '@/js/unit'
 
-    const { openWs, checkMsgs, removeMsgAt, showOrderDialog, closeOrderDialog, setOrderId, setCheckingMsgIndex, removeCheckingMsg } = useUserStore()
-    const { msgDrawer, msgs, checkingOrderId, orderDialogVisible, checkingMsgIndex } = storeToRefs(useUserStore())
+    const { openWs, checkMsgs, closeOrderDialog, removeCheckingMsg } = useUserStore()
+    const { msgDrawer, msgs, checkingOrderId, orderDialogVisible } = storeToRefs(useUserStore())
 
-    onBeforeMount(() => {
-        //进入首页获取信息
-        getInfo({
-            onSucceed: () => openWs() //进入页面没问题就建立websocket连接
-        })
-    })
-
-    function handleClickMsg(msg, index){
-        setCheckingMsgIndex(index)
-        switch (msg.type) {
-            case 0:
-                setOrderId(msg.data)
-                showOrderDialog()
-                break;
-        
-            default:
-                break;
-        }
-    }
     function handleTakeOrder(){
         ElMessage('正在接单，请稍等')
         takeOrder(checkingOrderId.value, {
@@ -50,27 +31,23 @@
         removeCheckingMsg()
         closeOrderDialog()
     }
-    function handleDeleteMsg(msg, index){
-        switch (msg.type) {
-            case 0:
-                ElMessageBox.confirm('拒绝此订单？').then(() => {
-                    rejectOrder(msg.data)
-                    removeMsgAt(index)
-                })
-                break;
-        
-            default:
-                break;
-        }
-    }
+    
+    onBeforeMount(() => {
+        //进入首页获取信息
+        getInfo({
+            onSucceed: () => openWs() //进入页面没问题就建立websocket连接
+        })
+    })
+    provide("headerHeightPx", 50)
 </script>
 
 <template>
     <el-container>
-        <el-header height="40" class="top-nav">
+        <el-header height="50px" id="top-nav">
             <TopNav/>
         </el-header>
-        <el-main>
+        <!-- body在edge有8px的margin，等多浏览器再处理 -->
+        <el-main style="padding-top: calc(42px + var(--el-main-padding));">
             <RouterView v-slot="{ Component }">
                 <KeepAlive include="HomeView">
                     <component :is="Component"></component>
@@ -82,7 +59,7 @@
                 </template>
                 <template #default>
                     <p v-show="msgs.length === 0">还没有消息哦</p>
-                    <MessageCard v-for="(msg, index) of msgs" :msg="msg" @delete="handleDeleteMsg(msg, index)" @click="handleClickMsg(msg, index)"/>
+                    <MessageCard v-for="msg of msgs" :msg="msg" />
                 </template>
             </el-drawer>
             <OrderDialog v-model="orderDialogVisible">
@@ -116,13 +93,16 @@
 </template>
 
 <style>
-.top-nav {
-    padding: 6px 10px;
+#top-nav {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: solid 1px rgb(180, 170, 170);
+    background-color: white;
+    position: fixed;
+    top: 0;
+    z-index: 1000;
 }
 .order-dialog-footer{
     font-size: 14px;

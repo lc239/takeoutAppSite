@@ -1,6 +1,5 @@
 <script setup>
     import { useShoppingStore } from '@/stores/shopping'
-    import { useRestaurantStore } from '@/stores/restaurant'
     import { storeToRefs } from 'pinia'
     import MenuCard from '@/components/restaurantPage/MenuCard.vue'
     import { useUserStore } from '@/stores/user'

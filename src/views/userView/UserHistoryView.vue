@@ -1,12 +1,11 @@
 <script setup>
-    import LoadMoreInView from '@/components/LoadMoreInView.vue';
-    import UserHistoryItem from '@/components/userCenter/UserHistoryItem.vue';
+    import LoadMoreInView from '@/components/LoadMoreInView.vue'
+    import UserHistoryItem from '@/components/userCenter/UserHistoryItem.vue'
+    import CommentDialog from '@/components/userCenter/CommentDialog.vue'
     import { getOrders } from '@/network/userApi'
-    import { ref } from 'vue';
+    import { ref } from 'vue'
 
     const orders = ref([])
-    const msg = ref('拉到底加载') //页面底部的提示
-    const activeOrders = ref([])
     let pageOffset = 0 //该请求的页数偏移
     const pageSize = 10 //一页10个
     const loadView = ref(null)
@@ -14,15 +13,13 @@
         getOrders({pageOffset, pageSize}, {
             onSucceed: newOrders => {
                 if (newOrders.length < pageSize) {
-                    msg.value = '已经没有其他订单了'
                     loadView.value.unobserve()
+                }else{
+                    loadView.value.waitNext()
                 }
                 orders.value.push(...newOrders)
                 pageOffset++
-            },
-            onFailed: failMsg => msg.value = failMsg,
-            onError: err => msg.value = '发生错误，请检查网络',
-            onFinally: () => loadView.value.waitNext()
+            }
         })
     }
 </script>
@@ -30,17 +27,23 @@
 <template>
     <el-scrollbar max-height="480px">
         <template v-if="orders.size === 0">
-            {{ msg }}
+            没有订单记录
         </template>
-        <el-collapse v-model="activeOrders">
-            <UserHistoryItem v-for="order in orders" :key="order.id" :order="order"/>
-            <LoadMoreInView @load="loadMore" ref="loadView">
-               <div class="history-footer" ref="historyFooter">
-                    {{ msg }}
-                </div> 
+        <el-collapse>
+            <UserHistoryItem v-for="order in orders" :key="order.orderId" :order="order"/>
+            <LoadMoreInView @load="loadMore" ref="loadView" v-slot="slotProps">
+               <div class="history-footer">
+                    <template v-if="slotProps.observing">
+                        拉到底就会刷新哦
+                    </template>
+                    <template v-else>
+                        已经没有其他订单了
+                    </template>
+                </div>
             </LoadMoreInView>
         </el-collapse>
     </el-scrollbar>
+    <CommentDialog/>
 </template>
 
 <style>

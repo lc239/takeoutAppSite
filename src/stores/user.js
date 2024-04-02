@@ -109,32 +109,42 @@ export const useUserStore = defineStore('user', () => {
     //     ws.value.send(request)
     // }
     const msgs = ref([])
+    const orderMsgs = computed(() => msgs.value.filter(msg => msg.type === 0))
     const newMsgNum = ref(0)
     const resetNewMsg = () => newMsgNum.value = 0
     const msgDrawer = ref(false)
-    const showMsgDrawer = () => {msgDrawer.value = true;console.log(msgs.value)}
+    const showMsgDrawer = () => msgDrawer.value = true
     function checkMsgs(){
         msgs.value = msgs.value.filter(msg => {
             if(msg.type === 0) return msg.time.diff(dayjs(), 'm', true) < 10 //订单要求10分钟内接
             else return true
         })
     }
-    const removeMsgAt = index => msgs.value.splice(index, 1)
-    const removeCheckingMsg = () => removeMsgAt(checkingMsgIndex.value)
+    const removeMsg = msg => msgs.value.splice(msgs.value.indexOf(msg), 1)
     const checkingMsgIndex = ref(0)
+    const removeCheckingMsg = () => msgs.value.splice(checkingMsgIndex, 1)
 
     const orderDialogVisible = ref(false)
-    const showOrderDialog = () => orderDialogVisible.value = true
+    const showOrderDialog = orderId => {
+        checkingOrderId.value = orderId
+        orderDialogVisible.value = true
+    }
     const closeOrderDialog = () => orderDialogVisible.value = false
     const checkingOrderId = ref('')
-    
-    const setCheckingMsgIndex = i => checkingMsgIndex.value = i
-    const setOrderId = id => checkingOrderId.value = id
+
+    const commentingOrder = ref(null)
+    const commentDialogVisible = ref(false)
+    const showCommentDialog = order => {
+        commentingOrder.value = order
+        commentDialogVisible.value = true
+    }
+    const closeCommentDialog = () => commentDialogVisible.value = false
 
     return {
         token, refreshToken, username, setUsername, id, phone, addresses, addAddress, setAddresses, hasAddress, isSeller, setSeller, isDeliveryMan, setDeliveryMan, avatarUrl,
-        isLogin, setTokens, setInfo, logout, ws, openWs, msgs, newMsgNum, resetNewMsg, msgDrawer, checkMsgs, removeMsgAt, showMsgDrawer, removeCheckingMsg,
-        checkingOrderId, setOrderId, orderDialogVisible, showOrderDialog, closeOrderDialog, checkingMsgIndex, setCheckingMsgIndex
+        isLogin, setTokens, setInfo, logout, ws, openWs, msgs, newMsgNum, resetNewMsg, msgDrawer, checkMsgs, removeMsg, showMsgDrawer, orderMsgs,
+        orderDialogVisible, showOrderDialog, closeOrderDialog, checkingMsgIndex, removeCheckingMsg, checkingOrderId,
+        commentingOrder, commentDialogVisible, showCommentDialog, closeCommentDialog
     }
 }, {
     persist: {

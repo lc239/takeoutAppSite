@@ -116,3 +116,31 @@ export function addAddress(address, handlers = {}){
         }
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
+
+export function setAddresses(addressArr, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.put('/user/address/set', addressArr).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                const { setAddresses } = useUserStore()
+                setAddresses(addressArr)
+                curHandlers.onSucceed(res.data.data)
+            }else{
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function commentOrder(orderId, comment, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.put(`/user/order/comment/${orderId}`, comment).then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }else{
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}

@@ -6,15 +6,21 @@ import { getRestaurantById } from '@/network/restaurantApi'
 
 const LoginView = () => import('@/views/LoginView.vue')
 const HomeView = () => import('@/views/HomeView.vue')
+
 const UserView = () => import('@/views/userView/UserView.vue')
 const UserInformationView = () => import('@/views/userView/UserInformationView.vue')
 const UserHistoryView = () => import('@/views/userView/UserHistoryView.vue')
+
 const RestaurantHistoryView = () => import('@/views/userView/RestaurantHistoryView.vue')
 const RestaurantManageView = () => import('@/views/restaurantManageView/RestaurantManageView.vue')
 const RestaurantInformationView = () => import('@/views/restaurantManageView/RestaurantInformationView.vue')
 const MenuManagementView = () => import('@/views/restaurantManageView/MenuManagementView.vue')
+const OrderManageView = () => import('@/views/restaurantManageView/OrderManageView.vue')
+
 const RestaurantView = () => import('@/views/restaurant/RestaurantView.vue')
 const CategoryView = () => import('@/views/restaurant/CategoryView.vue')
+const CommentView = () => import('@/views/restaurant/CommentView.vue')
+
 const DeliveryManageView = () => import('@/views/delivery/DeliveryManageView.vue')
 const DeliveryInformationView = () => import('@/views/delivery/DeliveryInformationView.vue')
 const DeliveryHistoryView = () => import('@/views/delivery/DeliveryHistoryView.vue')
@@ -69,6 +75,11 @@ const router = createRouter({
           path: 'menuManagement',
           name: 'MenuManagement',
           component: MenuManagementView
+        },
+        {
+          path: 'orderManagement',
+          name: 'OrderManagement',
+          component: OrderManageView
         }
       ]
     },
@@ -103,6 +114,11 @@ const router = createRouter({
           path: '',
           name: 'RestaurantWithCategory',
           component: CategoryView
+        },
+        {
+          path: 'comment',
+          name: 'RestaurantComment',
+          component: CommentView
         }
       ],
       beforeEnter: (to, from) => {

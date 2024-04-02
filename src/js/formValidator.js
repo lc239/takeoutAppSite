@@ -5,5 +5,5 @@ export function isPhoneNumber(rule, phone, callback){
 }
 
 export function notSpace(rule, str, callback){
-    if(str.trim().length === 0) callback(new Error('该字段不能为空'))
+    if(!str?.trim()?.length) callback(new Error('该字段不能为空'))
 }

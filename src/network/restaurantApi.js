@@ -217,3 +217,18 @@ export function rejectOrder(id, handlers = {}){
         }
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
+
+export function getComments(restaurantId, pageOffset, pageSize, handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.get(`/restaurant/comment/${restaurantId}/${pageOffset}/${pageSize}`).then(res => {
+        console.log(res)
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }
+            else {
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}

@@ -1,6 +1,6 @@
 <script setup>
 //测试加载时已经在视口的情况
-    import { onMounted, ref } from 'vue';
+    import { onMounted, ref } from 'vue'
 
     const emit = defineEmits(['load'])
     const props = defineProps({
@@ -32,6 +32,7 @@
     function unobserve(){
         loadDivObserver.unobserve(loadDiv.value)
         observing.value = false
+        loading.value = false
     }
     function waitNext(){
         loading.value = false

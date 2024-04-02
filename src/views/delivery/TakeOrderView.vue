@@ -35,7 +35,7 @@
                 })
             },
             onFinally: () => {
-                orders.value.splice(orders.value.findIndex(order => order.id === orderId), 1)
+                orders.value.splice(orders.value.findIndex(order => order.orderId === orderId), 1)
                 waitingTakeOrder.value = false
             }
         })
@@ -43,9 +43,9 @@
 </script>
 
 <template>
-    <div class="order-wrapper" v-for="order of orders" :key="order.id">
+    <div class="order-wrapper" v-for="order of orders" :key="order.orderId">
         <OrderCard class="order-preview" :order="order"/>
-        <el-button :disabled="waitingTakeOrder" type="primary" size="large" @click="handleTakeOrder(order.id)">接单</el-button>
+        <el-button :disabled="waitingTakeOrder" type="primary" size="large" @click="handleTakeOrder(order.orderId)">接单</el-button>
     </div>
     <LoadMoreInView id="delivery-take-order-load" ref="loadView" margin-top="10px" @load="() => loadPages()" v-slot="slotProps">
         <template v-if="slotProps.observing">

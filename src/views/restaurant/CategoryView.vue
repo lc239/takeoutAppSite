@@ -12,7 +12,7 @@
 <template>
     <el-container>
         <el-aside>
-            <el-menu>
+            <el-menu default-active="0">
                 <template v-for="(category, index) of categories">
                     <el-menu-item v-if="category.menus.length" :index="index.toString()" @click="() => setCurCategoryIndex(index)">{{ category.name }}</el-menu-item>
                 </template>
