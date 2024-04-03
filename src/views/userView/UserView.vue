@@ -6,6 +6,8 @@
     import { getInfo, modifyUsername } from '@/network/userApi'
     import { genFileId, ElMessage } from 'element-plus'
     import { BASE_URL } from '@/network/axios-instance'
+    import { handleBeforeAvatarUpload } from '@/js/imageUpload'
+
     const { avatarUrl, username, isSeller, isDeliveryMan, token } = storeToRefs(useUserStore())
     const avatarArea = ref(null)
     const inAvatarArea = useAreaIn(avatarArea)
@@ -47,16 +49,6 @@
         file.uid = genFileId()
         avatarUpload.value.handleStart(file)
         avatarUpload.value.submit()
-    }
-    function handleBeforeAvatarUpload(rawFile) {
-        if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png' && rawFile.type !== 'image/webp') {
-            ElMessage.error('必须上传图片哦')
-            return false
-        } else if (rawFile.size / 1024 / 1024 > 2) {
-            ElMessage.error('请上传2mb以下的图片')
-            return false
-        }
-        return true
     }
 </script>
 

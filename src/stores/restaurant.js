@@ -32,7 +32,7 @@ export const useRestaurantStore = defineStore('restaurant', () => {
 
     const avatarFilename = ref(null)
     const setAvatarFilename = newFilename => avatarFilename.value = newFilename
-    const avatarUrl = computed(() => aliUrlPrefix.concat(avatarFilename.value ? avatarFilename.value : defaultRestaurantImgFilename))
+    const avatarUrl = computed(() => aliUrlPrefix.concat(avatarFilename.value || defaultRestaurantImgFilename))
 
     function setRestaurant(restaurant){
         id.value = restaurant.id

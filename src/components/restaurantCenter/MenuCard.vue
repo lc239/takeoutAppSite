@@ -7,6 +7,7 @@
     import { useRestaurantStore } from '@/stores/restaurant'
     import { useUserStore } from '@/stores/user'
     import { storeToRefs } from 'pinia'
+    import { handleBeforeAvatarUpload } from '@/js/imageUpload'
 
     const props = defineProps(['menuIndex', 'categoryIndex'])
     const { token } = storeToRefs(useUserStore())
@@ -18,8 +19,8 @@
     const imageArea = ref(null)
     const inImageArea = useAreaIn(imageArea)
     const imageUpload = ref(null)
-    function handleImageUploadSuccess(res){
-        setMenuImageFilename(res.data, props.categoryIndex, props.menuIndex)
+    function handleImageUploadSuccess(data){
+        setMenuImageFilename(data.data, props.categoryIndex, props.menuIndex)
     }
     function handleImageUploadExceed(files){
         imageUpload.value.clearFiles()
@@ -27,16 +28,6 @@
         file.uid = genFileId()
         imageUpload.value.handleStart(file)
         imageUpload.value.submit()
-    }
-    function handleBeforeImageUpload(rawFile) {
-        if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png' && rawFile.type !== 'image/webp') {
-            ElMessage.error('必须上传图片哦')
-            return false
-        } else if (rawFile.size / 1024 / 1024 > 2) {
-            ElMessage.error('请上传2mb以下的图片')
-            return false
-        }
-        return true
     }
 </script>
 
@@ -61,10 +52,11 @@
                         :show-file-list="false"
                         :on-success="handleImageUploadSuccess"
                         :on-exceed="handleImageUploadExceed"
-                        :before-upload="handleBeforeImageUpload"
                         :action="`${BASE_URL}restaurant/menu/upload/image/${props.categoryIndex}/${props.menuIndex}`"
                         method="put"
-                        :headers="{ Authorization: `Bearer ${token}` }">
+                        :headers="{ Authorization: `Bearer ${token}` }"
+                        :before-upload="handleBeforeAvatarUpload"
+                    >
                         <el-button size="small" type="info" round>更改图片</el-button>
                     </el-upload>
                 </div>

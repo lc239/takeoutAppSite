@@ -6,17 +6,18 @@
     import AddAddressDialog from '@/components/userCenter/AddAddressDialog.vue'
     import { useRoute, useRouter } from 'vue-router';
     import { watch } from 'vue';
-    import { getRestaurantById } from '@/network/restaurantApi';
+    import { getRestaurantById } from '@/network/restaurantApi'
+    import { ElMessage } from 'element-plus'
 
     const { restaurant, addAddressDialogVisible, closeAddAddressDialog } = storeToRefs(useShoppingStore())
-    const { setRestaurant } = useShoppingStore()
+    const { setRestaurant, clearShoppingCar } = useShoppingStore()
     const router = useRouter()
     const route = useRoute()
 
     watch(
         () => route.params.id,
         async newId => {
-            console.log(newId)
+            clearShoppingCar()
             getRestaurantById(newId, {
                 onSucceed: res => {
                     setRestaurant(res)

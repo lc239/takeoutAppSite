@@ -56,17 +56,41 @@ export const useUserStore = defineStore('user', () => {
         router.push({name: 'Login'}) //登出时前往登录页
         if(ws.value) ws.value.close() //关闭websocket
     }
+
+    const heartCheck = {
+        timeout: 50000,        // 50秒心跳，nginx是60秒
+        serverTimeoutObj: null,
+        reset: function(){
+            clearInterval(this.serverTimeoutObj)
+            return this
+        },
+        start: function(){
+            this.serverTimeoutObj = setInterval(function(){
+                if(ws.value.readyState == 1){
+                    console.log("心跳")
+                    ws.value.send(JSON.stringify("ping"))
+                }else{
+                    console.log("断开状态，尝试重连")
+                    openWs()
+                }
+            }, this.timeout)
+        }
+    }
     const ws = ref(null)
     function openWs(){
-        ws.value = new WebSocket(`ws://localhost:8080/wsp?id=${id.value}`)
+        ws.value = new WebSocket(`${import.meta.env.VITE_WS_BASE_URL}?id=${id.value}`)
+        // ws.value = new WebSocket(`ws://8.130.174.243/wsp?id=${id.value}`)
         ws.value.addEventListener('open', e => {
             console.log('成功')
+            heartCheck.reset().start()
             window.onbeforeunload = () => {
                 ws.value.close()
             }
         })
         ws.value.addEventListener('message', e => {
+            heartCheck.reset().start() //重启心跳计时
             console.log(e)
+            if(e.data === "\"ping\"") return
             const msg = JSON.parse(e.data)
             msg.time = dayjs(msg.time)
             switch (msg.type) {
@@ -101,13 +125,7 @@ export const useUserStore = defineStore('user', () => {
             console.log(e)
         })
     }
-    // function sendWs(type, targetId){
-    //     const request = JSON.stringify({
-    //         type,
-    //         targetId
-    //     })
-    //     ws.value.send(request)
-    // }
+
     const msgs = ref([])
     const orderMsgs = computed(() => msgs.value.filter(msg => msg.type === 0))
     const newMsgNum = ref(0)

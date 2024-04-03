@@ -2,12 +2,13 @@
     import { BASE_URL } from '@/network/axios-instance';
     import { useRestaurantStore } from '@/stores/restaurant';
     import { useUserStore } from '@/stores/user';
-    import { genFileId } from 'element-plus';
+    import { ElMessage, genFileId } from 'element-plus';
     import { storeToRefs } from 'pinia';
     import { computed, ref } from 'vue';
+    import { handleBeforeAvatarUpload } from '@/js/imageUpload'
 
     const { token } = storeToRefs(useUserStore())
-    const { avatarUrl, name } = storeToRefs(useRestaurantStore())
+    const { avatarUrl } = storeToRefs(useRestaurantStore())
     const { setAvatarFilename } = useRestaurantStore()
     const imageStyle = {width: '148px', height: '148px'} //同上传的尺寸
     const uploadImage = ref([])
@@ -19,8 +20,10 @@
         file.uid = genFileId()
         upload.value.handleStart(file)
     }
-    function handleSuccess(response){
-        setAvatarFilename(response.data.data)
+    function handleSuccess(data){
+        ElMessage('上传成功')
+        upload.value.clearFiles()
+        if(data.code === 0) setAvatarFilename(data.data)
     }
 </script>
 
@@ -39,6 +42,7 @@
             :on-exceed="handleExceed"
             name="image"
             :on-success="handleSuccess"
+            :before-upload="handleBeforeAvatarUpload"
         >
             <el-icon>
                 <Plus />

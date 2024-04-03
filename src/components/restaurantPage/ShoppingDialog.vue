@@ -58,6 +58,7 @@
             </div>
         </template>
     </el-dialog>
+    <AddAddressDialog/>
 </template>
 
 <style scoped>
