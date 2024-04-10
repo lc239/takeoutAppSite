@@ -17,7 +17,6 @@
         if(addressSelect.value){
             ElMessage('请稍等')
             orderDisabled.value = true
-            console.log(orderedMenus.value)
             putOrder({menus: orderedMenus.value, address: addressSelect.value}, restaurant.value.id, {
                 onSucceed: () => {
                     ElMessage({
@@ -58,7 +57,6 @@
             </div>
         </template>
     </el-dialog>
-    <AddAddressDialog/>
 </template>
 
 <style scoped>

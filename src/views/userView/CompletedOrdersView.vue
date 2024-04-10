@@ -1,6 +1,6 @@
 <script setup>
     import LoadMoreInView from '@/components/LoadMoreInView.vue'
-    import UserHistoryItem from '@/components/userCenter/UserHistoryItem.vue'
+    import CompletedOrderItem from '@/components/userCenter/CompletedOrderItem.vue'
     import CommentDialog from '@/components/userCenter/CommentDialog.vue'
     import { getOrders } from '@/network/userApi'
     import { ref } from 'vue'
@@ -26,11 +26,8 @@
 
 <template>
     <el-scrollbar max-height="480px">
-        <template v-if="orders.size === 0">
-            没有订单记录
-        </template>
         <el-collapse>
-            <UserHistoryItem v-for="order in orders" :key="order.orderId" :order="order"/>
+            <CompletedOrderItem v-for="order in orders" :key="order.orderId" :order="order"/>
             <LoadMoreInView @load="loadMore" ref="loadView" v-slot="slotProps">
                <div class="history-footer">
                     <template v-if="slotProps.observing">

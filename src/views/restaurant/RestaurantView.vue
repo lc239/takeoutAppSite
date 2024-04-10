@@ -5,12 +5,13 @@
     import ShoppingDialog from '@/components/restaurantPage/ShoppingDialog.vue'
     import AddAddressDialog from '@/components/userCenter/AddAddressDialog.vue'
     import { useRoute, useRouter } from 'vue-router';
-    import { watch } from 'vue';
+    import { onUnmounted, watch } from 'vue';
     import { getRestaurantById } from '@/network/restaurantApi'
     import { ElMessage } from 'element-plus'
+    import { addAddress } from '@/network/userApi'
 
-    const { restaurant, addAddressDialogVisible, closeAddAddressDialog } = storeToRefs(useShoppingStore())
-    const { setRestaurant, clearShoppingCar } = useShoppingStore()
+    const { restaurant, addAddressDialogVisible } = storeToRefs(useShoppingStore())
+    const { setRestaurant, clearShoppingCar, closeAddAddressDialog } = useShoppingStore()
     const router = useRouter()
     const route = useRoute()
 
@@ -37,6 +38,9 @@
             }
         })
     }
+    onUnmounted(() => {
+        clearShoppingCar()
+    })
 </script>
 
 <template>

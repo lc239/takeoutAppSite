@@ -8,7 +8,7 @@
     import { handleBeforeAvatarUpload } from '@/js/imageUpload'
 
     const { token } = storeToRefs(useUserStore())
-    const { avatarUrl } = storeToRefs(useRestaurantStore())
+    const { avatarUrl, name } = storeToRefs(useRestaurantStore())
     const { setAvatarFilename } = useRestaurantStore()
     const imageStyle = {width: '148px', height: '148px'} //同上传的尺寸
     const uploadImage = ref([])
@@ -60,7 +60,7 @@
         </el-upload>
         <el-button v-show="hasImage" @click="() => upload.submit()">提交图片</el-button>
     </div>
-
+    <p>店铺名称：{{ name }}</p>
 </template>
 
 <style>

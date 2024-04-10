@@ -31,6 +31,8 @@
                 })
             }
             break;
+        case 1:
+            text = dayjsToFormat1(props.msg.time) + '您的订单已被接单'
         default:
             break;
     }

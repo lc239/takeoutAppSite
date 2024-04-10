@@ -98,7 +98,8 @@
                             <template #title>
                                 <span>历史记录</span>
                             </template>
-                            <el-menu-item index="/userCenter/userHistory">我的订单</el-menu-item>
+                            <el-menu-item index="/userCenter/completedOrders">已完成订单</el-menu-item>
+                            <el-menu-item index="/userCenter/deliveringOrders">配送中订单</el-menu-item>
                             <!-- <el-menu-item :disabled="!isSeller" index="/userCenter/restaurantHistory">店铺记录</el-menu-item>
                             <el-menu-item :disabled="!isDeliveryMan" index="/userCenter/deliveryHistory">骑手记录</el-menu-item> -->
                         </el-sub-menu>
@@ -106,7 +107,7 @@
                 </el-aside>
                 <el-main>
                     <RouterView v-slot="{ Component }">
-                        <KeepAlive include="UserHistoryView">
+                        <KeepAlive include="CompletedOrdersView">
                             <component :is="Component"></component>
                         </KeepAlive>
                     </RouterView>
@@ -168,5 +169,6 @@
 
 .user-main > .user-aside{
     border-radius: 12px;
+    user-select: none;
 }
 </style>

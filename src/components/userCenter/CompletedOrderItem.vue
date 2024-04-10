@@ -13,7 +13,7 @@
     const orderCompleteTime = computed(() => {
         return props.order.completeTime ? instantToFormat(props.order.completeTime) : '未完成'
     })
-    const restaurantName = ref('加载中')
+    const restaurantName = ref('')
     const restaurantImgFilename = ref('')
     onBeforeMount(() => {
         getRestaurantById(props.order.restaurantId,{
@@ -40,7 +40,7 @@
         <template #default>
             <div class="item-content">
                 <div class="item-header">
-                    {{ `订单号: ${props.order.id}` }}
+                    {{ `订单号: ${props.order.orderId}` }}
                 </div>
                 <div class="item-main">
                     <el-image :src="aliUrlPrefix + restaurantImgFilename"

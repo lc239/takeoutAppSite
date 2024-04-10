@@ -1,10 +1,29 @@
 import instance from "@/network/axios-instance"
 import { defaultHandlers } from "@/network/axios-instance"
 import { useUserStore } from "@/stores/user"
+import { useHistoryStore } from '@/stores/history'
 import { storeToRefs } from "pinia"
 import router from "@/router"
 
+// export function getInfo(){
+//     return instance.get('/user/info').then(res => {
+//         if(res.status === 200){
+//             if(res.data.code === 0) {
+//                 const { setInfo } = useUserStore()
+//                 setInfo(res.data.data) //获取用户信息写入store
+//             }
+//             else {
+//                 //获取信息失败就去登录页
+//                 router.push({name: 'Login'})
+//             }
+//             return res.data
+//         }
+//     })
+// }
+
 export function getInfo(handlers = {}){
+    // const curHandlers = {...handlers, __proto__: defaultHandlers}
+    // const curHandlers = {...defaultHandlers, ...handlers}
     const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
     instance.get('/user/info').then(res => {
         if(res.status === 200){
@@ -137,6 +156,21 @@ export function commentOrder(orderId, comment, handlers = {}){
     instance.put(`/user/order/comment/${orderId}`, comment).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
+                curHandlers.onSucceed(res.data.data)
+            }else{
+                curHandlers.onFailed(res.data.message)
+            }
+        }
+    }).catch(curHandlers.onError).finally(curHandlers.onFinally)
+}
+
+export function getDeliveringOrders(handlers = {}){
+    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    instance.get('/user/orders/delivering').then(res => {
+        if(res.status === 200){
+            if(res.data.code === 0) {
+                const { setOrders } = useHistoryStore()
+                setOrders(res.data.data)
                 curHandlers.onSucceed(res.data.data)
             }else{
                 curHandlers.onFailed(res.data.message)

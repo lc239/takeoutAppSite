@@ -195,7 +195,7 @@ export function takeOrder(id, handlers = {}){
     instance.put(`/restaurant/order/take/${id}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                curHandlers.onSucceed(res.data.data)
+                curHandlers.onSucceed()
             }
             else {
                 curHandlers.onFailed(res.data.message)
@@ -209,7 +209,7 @@ export function rejectOrder(id, handlers = {}){
     instance.delete(`/restaurant/order/delete/${id}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                curHandlers.onSucceed(res.data.data)
+                curHandlers.onSucceed()
             }
             else {
                 curHandlers.onFailed(res.data.message)

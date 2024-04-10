@@ -9,7 +9,8 @@ const HomeView = () => import('@/views/HomeView.vue')
 
 const UserView = () => import('@/views/userView/UserView.vue')
 const UserInformationView = () => import('@/views/userView/UserInformationView.vue')
-const UserHistoryView = () => import('@/views/userView/UserHistoryView.vue')
+const CompletedOrdersView = () => import('@/views/userView/CompletedOrdersView.vue')
+const UserDeliveringOrdersView = () => import('@/views/userView/DeliveringOrdersView.vue')
 
 const RestaurantHistoryView = () => import('@/views/userView/RestaurantHistoryView.vue')
 const RestaurantManageView = () => import('@/views/restaurantManageView/RestaurantManageView.vue')
@@ -50,9 +51,14 @@ const router = createRouter({
           component: UserInformationView
         },
         {
-          path: 'userHistory',
-          name: 'UserHistory',
-          component: UserHistoryView
+          path: 'completedOrders',
+          name: 'CompletedOrders',
+          component: CompletedOrdersView
+        },
+        {
+          path: 'deliveringOrders',
+          name: 'UserDeliveringOrders',
+          component: UserDeliveringOrdersView
         },
         {
           path: 'restaurantHistory',
@@ -133,6 +139,7 @@ const router = createRouter({
 
 //未登录强制前往登录页面
 router.beforeEach((to, from) => {
+  console.log(to, from)
   const { isLogin } = storeToRefs(useUserStore())
   if(to.name === 'Login') return true
   if(!isLogin.value) return {name: 'Login'}

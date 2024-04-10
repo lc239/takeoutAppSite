@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 import router from '@/router'
 import dayjs from 'dayjs'
 import { ElNotification } from 'element-plus'
+import { useHistoryStore } from './history'
 
 export const useUserStore = defineStore('user', () => {
 
@@ -76,10 +77,10 @@ export const useUserStore = defineStore('user', () => {
             }, this.timeout)
         }
     }
+    //待改为SSE
     const ws = ref(null)
     function openWs(){
         ws.value = new WebSocket(`${import.meta.env.VITE_WS_BASE_URL}?id=${id.value}`)
-        // ws.value = new WebSocket(`ws://8.130.174.243/wsp?id=${id.value}`)
         ws.value.addEventListener('open', e => {
             console.log('成功')
             heartCheck.reset().start()
@@ -99,13 +100,15 @@ export const useUserStore = defineStore('user', () => {
                         title: '您有新订单'
                     })
                     newMsgNum.value++
-                    msgs.value.push(msg) //根据类型展示之前先只展示这些消息；考虑换成unshift
+                    pushMsgs(msg) //根据类型展示之前先只展示这些消息；考虑换成unshift
                     break
                 case 1:
                     ElNotification({
                         title: '商家已接单',
                         duration: 0
                     })
+                    const { setTaken } = useHistoryStore()
+                    setTaken(msg.data)
                     break
                 case 2:
                     ElNotification({
@@ -113,9 +116,16 @@ export const useUserStore = defineStore('user', () => {
                         duration: 0
                     })
                     break
-            
+                case 4:
+                    ElNotification({
+                        title: '您的订单已送达',
+                        duration: 0
+                    })
+                    const { completeOrder } = useHistoryStore()
+                    completeOrder(msg.data)
+                    break
                 default:
-                    break;
+                    break
             }
         })
         ws.value.addEventListener('error', e => {
@@ -134,13 +144,16 @@ export const useUserStore = defineStore('user', () => {
     const showMsgDrawer = () => msgDrawer.value = true
     function checkMsgs(){
         msgs.value = msgs.value.filter(msg => {
-            if(msg.type === 0) return msg.time.diff(dayjs(), 'm', true) < 10 //订单要求10分钟内接
+            if(msg.type === 0) return dayjs().diff(msg.time, 'm', true) < 10 //订单要求10分钟内接
             else return true
         })
     }
     const removeMsg = msg => msgs.value.splice(msgs.value.indexOf(msg), 1)
     const checkingMsgIndex = ref(0)
     const removeCheckingMsg = () => msgs.value.splice(checkingMsgIndex, 1)
+    function pushMsgs(...newMsgs){
+        msgs.value.push(...newMsgs)
+    }
 
     const orderDialogVisible = ref(false)
     const showOrderDialog = orderId => {
@@ -160,7 +173,7 @@ export const useUserStore = defineStore('user', () => {
 
     return {
         token, refreshToken, username, setUsername, id, phone, addresses, addAddress, setAddresses, hasAddress, isSeller, setSeller, isDeliveryMan, setDeliveryMan, avatarUrl,
-        isLogin, setTokens, setInfo, logout, ws, openWs, msgs, newMsgNum, resetNewMsg, msgDrawer, checkMsgs, removeMsg, showMsgDrawer, orderMsgs,
+        isLogin, setTokens, setInfo, logout, ws, openWs, msgs, newMsgNum, resetNewMsg, msgDrawer, checkMsgs, removeMsg, showMsgDrawer, orderMsgs, pushMsgs,
         orderDialogVisible, showOrderDialog, closeOrderDialog, checkingMsgIndex, removeCheckingMsg, checkingOrderId,
         commentingOrder, commentDialogVisible, showCommentDialog, closeCommentDialog
     }

@@ -2,16 +2,21 @@
     import TopNav from '@/components/homePage/TopNav.vue'
     import { onBeforeMount, provide } from 'vue'
     import { getInfo } from '@/network/userApi'
+    import { getDeliveringOrders } from '@/network/deliveryApi'
+    import { getDeliveringOrders as getUsersDeliveringOrders } from '@/network/userApi'
     import { useUserStore } from '@/stores/user'
     import { storeToRefs } from 'pinia'
     import MessageCard from '@/components/homePage/MessageCard.vue'
     import OrderDialog from '@/components/restaurantCenter/OrderDialog.vue'
     import { takeOrder, rejectOrder } from '@/network/restaurantApi'
-    import { ElMessage } from 'element-plus'
-    import { instantToFormat } from '@/js/unit'
+    import { ElMessage, ElNotification } from 'element-plus'
+    import { fenToYuan, instantToFormat } from '@/js/unit'
+    import dayjs from 'dayjs'
+    import { useRouter } from 'vue-router'
 
-    const { openWs, checkMsgs, closeOrderDialog, removeCheckingMsg } = useUserStore()
-    const { msgDrawer, msgs, checkingOrderId, orderDialogVisible } = storeToRefs(useUserStore())
+    const { openWs, checkMsgs, closeOrderDialog, removeCheckingMsg, pushMsgs } = useUserStore()
+    const { msgDrawer, msgs, checkingOrderId, orderDialogVisible, isLogin, isDeliveryMan } = storeToRefs(useUserStore())
+    const router = useRouter()
 
     function handleTakeOrder(){
         ElMessage('正在接单，请稍等')
@@ -34,9 +39,33 @@
     
     onBeforeMount(() => {
         //进入首页获取信息
-        getInfo({
-            onSucceed: () => openWs() //进入页面没问题就建立websocket连接
-        })
+        if(isLogin){
+            getInfo({
+                onSucceed: () => {
+                    openWs() //进入页面没问题就建立websocket连接
+                    if(isDeliveryMan){ //是骑手获取正在配送的单
+                        getDeliveringOrders({
+                            onSucceed: orders => {
+                                const msgs = orders.map(order => ({ type: 1, time: dayjs(), order }))
+                                pushMsgs(...msgs) //进入页面获取正被派送的单
+                            }
+                        })
+                    }
+                    getUsersDeliveringOrders({ //获取自己下的单
+                        onSucceed: orders => {
+                            if(orders.length){
+                                ElNotification({
+                                    title: `您有${orders.length}个订单正在派送中`
+                                })
+                            }
+                        }
+                    })
+                }
+            })
+        }
+        else{
+            router.push({name: 'Login'})
+        }
     })
     provide("headerHeightPx", 50)
 </script>
@@ -69,7 +98,7 @@
                             <div class="flex-space-between">
                                 <span>{{ '打包费：' + slotProps.packPrice }}</span>
                                 <span>{{ '配送费：' + slotProps.deliveryPrice }}</span>
-                                <span>{{ '总价：' + slotProps.price }}</span> 
+                                <span>{{ '总价：' + fenToYuan(slotProps.price) + '元' }}</span>
                             </div>
                             <div class="flex-space-between">
                                 <span>{{ '客户名：' + slotProps.address.name }}</span>
