@@ -1,11 +1,12 @@
-<script setup>
-    import LoadMoreInView from '@/components/LoadMoreInView.vue';
-    import RestaurantCard from '@/components/homePage/RestaurantCard.vue';
-    import { getRestaurantsByPage } from '@/network/restaurantApi';
-    import { ref } from 'vue';
+<script setup lang="ts">
+    import LoadMoreInView from '@/components/LoadMoreInView.vue'
+    import RestaurantCard from '@/components/homePage/RestaurantCard.vue'
+    import { getRestaurantsByPage } from '@/network/restaurantApi'
+    import { RestaurantPreview } from '@/type/class';
+    import { ref } from 'vue'
 
-    const restaurants = ref([])
-    const loadView = ref(null)
+    const restaurants = ref<RestaurantPreview[]>([])
+    const loadView = ref<InstanceType<typeof LoadMoreInView> | null>(null)
     let pageOffset = 0
     const pageSize = 16
     function loadPages(){
@@ -13,16 +14,15 @@
             onSucceed: res => {
                 restaurants.value.push(...res)
                 pageOffset++
-                if(res.length < pageSize) loadView.value.unobserve()
+                if(res.length < pageSize) loadView.value!.unobserve()
             },
-            onFinally: () => loadView.value.waitNext()
+            onFinally: () => loadView.value!.waitNext()
         })
     }
 </script>
 
 <template>
     <div id="home-view">
-        <!-- 此处预留做类型筛选 -->
         <div id="type-filter">
             此处预留做类型筛选
         </div>

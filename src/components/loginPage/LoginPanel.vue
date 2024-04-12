@@ -1,11 +1,11 @@
-<script setup>
-  import { reactive } from 'vue'
+<script setup lang="ts">
+  import { ref } from 'vue'
   import { login } from '@/network/userApi';
   import { useRouter } from 'vue-router';
 
   const router = useRouter()
 
-  const form = reactive({
+  const form = ref({
     phone: '',
     password: ''
   })

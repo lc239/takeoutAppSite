@@ -1,14 +1,17 @@
-<script setup>
+<script setup lang="ts">
     import { getRestaurantById } from '@/network/restaurantApi'
     import { ref, onBeforeMount, computed } from 'vue'
     import { aliUrlPrefix } from '@/js/aliOssConfig'
     import { fenToYuan, instantToFormat } from '@/js/unit'
     import { useUserStore } from '@/stores/user'
+    import type { Order } from '@/type/class'
 
     const { showCommentDialog } = useUserStore()
-    const props = defineProps(['order'])
+    const props = defineProps<{
+        order: Order
+    }>()
     const orderCreateTime = computed(() => {
-        return instantToFormat(props.order.createTime)
+        return instantToFormat(props.order.createTime!)
     })
     const orderCompleteTime = computed(() => {
         return props.order.completeTime ? instantToFormat(props.order.completeTime) : '未完成'
@@ -16,7 +19,7 @@
     const restaurantName = ref('')
     const restaurantImgFilename = ref('')
     onBeforeMount(() => {
-        getRestaurantById(props.order.restaurantId,{
+        getRestaurantById(props.order.restaurantId!,{
             onSucceed: restaurant =>{
                 restaurantName.value = restaurant.name
                 restaurantImgFilename.value = restaurant.imageFilename
@@ -32,7 +35,7 @@
             <div class="user-history-item-title">
                 <span>{{ `店铺名：${restaurantName}` }}</span>
                 <div class="title-right">
-                    <span>{{ `总价：${fenToYuan(props.order.price) + '元'}` }}</span>
+                    <span>{{ `总价：${fenToYuan(props.order.price!) + '元'}` }}</span>
                     <span>{{ `下单时间：${orderCreateTime}` }}</span>
                 </div>
             </div>

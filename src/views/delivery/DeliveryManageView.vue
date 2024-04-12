@@ -1,23 +1,23 @@
-<script setup>
+<script setup lang="ts">
     import { useUserStore } from '@/stores/user'
     import { storeToRefs } from 'pinia'
     import { onBeforeMount, ref } from 'vue'
     import { register, getInfo } from '@/network/deliveryApi'
 
-    const { isDeliveryMan } = storeToRefs(useUserStore())
+    const { user } = storeToRefs(useUserStore())
     const registering = ref(false)
     function handleRegister(){
         registering.value = true
         register()
     }
     onBeforeMount(() => {
-        if(isDeliveryMan.value) getInfo()
+        if(user.value!.isDeliveryMan) getInfo()
     })
 </script>
 
 <template>
     <el-container class="delivery-manage-view">
-        <el-main v-if="!isDeliveryMan" class="not-delivery-man-content">
+        <el-main v-if="!user!.isDeliveryMan" class="not-delivery-man-content">
             <span>您还不是骑手，填写下面信息注册成为骑手吧（不过现在点击就送）</span>
             <el-button @click="handleRegister()" :disabled="registering">成为骑手</el-button>
         </el-main>

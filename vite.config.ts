@@ -11,7 +11,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+    },
+    extensions: ['.js', '.vue', '.json', '.ts']
   },
   //测试需要跨域
   server: {

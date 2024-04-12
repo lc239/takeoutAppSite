@@ -1,13 +1,14 @@
-<script setup>
+<script setup lang="ts">
     import { useRestaurantStore } from '@/stores/restaurant';
     import { storeToRefs } from 'pinia';
-    import { inject, ref } from 'vue';
+    import { ref } from 'vue';
     import MenuCard from "@/components/restaurantCenter/MenuCard.vue";
     import { addCategory, deleteCategory, updateCategory, addMenu, deleteMenu, updateMenu } from '@/network/restaurantApi';
     import { ElMessage, ElMessageBox } from 'element-plus';
     import { fenToYuan, yuanToFen } from '@/js/unit';
+    import { Menu } from '@/type/class';
 
-    const { categories } = storeToRefs(useRestaurantStore())
+    const { restaurant } = storeToRefs(useRestaurantStore())
     const { checkMenuName } = useRestaurantStore()
     function handleAddCategory(){
         ElMessageBox.prompt('请输入分类名', '提示', {
@@ -17,34 +18,34 @@
             inputErrorMessage: '请输入10个字以内(不能使用空白符)'
         }).then(({value}) => {
             addCategory(value,{
-                onSucceed: res => ElMessage({
+                onSucceed: () => ElMessage({
                     type: 'success',
                     message: '添加成功'
                 })
             })
         })
     }
-    function handleDeleteCategory(index){
+    function handleDeleteCategory(index: number){
         ElMessageBox.confirm('确定删除此分类吗', '警告', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
         }).then(() => {
             deleteCategory(index, {
-                onSucceed: res => ElMessage({
+                onSucceed: () => ElMessage({
                     type: 'success',
                     message: '删除成功'
                 })
             })
         })
     }
-    function handleUpdateCategoryName(index){
+    function handleUpdateCategoryName(index: number){
         ElMessageBox.prompt('请输入新的分类名', '提示', {
             confirmButtonText: '提交',
             cancelButtonText: '取消',
         }).then(({value}) => {
             updateCategory(index, value, {
-                onSucceed: res => ElMessage({
+                onSucceed: () => ElMessage({
                     type: 'success',
                     message: '修改成功'
                 })
@@ -60,7 +61,7 @@
         categoryIndex: 0,
         menuIndex: 0
     })
-    function handleAddMenu(index){
+    function handleAddMenu(index: number){
         menuForm.value.categoryIndex = index
         add = true
         menuDialogVisible.value = true
@@ -71,7 +72,7 @@
         if (add) {
             if (!checkMenuName(menu.name, categoryIndex)) ElMessage('名称不能重复或为空')
             addMenu(menu, categoryIndex,{
-                onSucceed: res => {
+                onSucceed: () => {
                     ElMessage({
                         type: 'success',
                         message: '添加成功'
@@ -81,7 +82,7 @@
             })
         } else {
             updateMenu(menu, categoryIndex, menuIndex, {
-                onSucceed: res => {
+                onSucceed: () => {
                     ElMessage({
                         type: 'success',
                         message: '修改成功'
@@ -91,32 +92,32 @@
             })
         }
     }
-    function handleDeleteMenu(categoryIndex, menuIndex){
+    function handleDeleteMenu(categoryIndex: number, menuIndex: number){
         ElMessageBox.confirm('确定删除此菜品吗', '警告', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
         }).then(() => {
             deleteMenu(categoryIndex, menuIndex,{
-                onSucceed: res => ElMessage({
+                onSucceed: () => ElMessage({
                     type: 'success',
                     message: '删除成功'
                 })
             })
         })
     }
-    function handleUpdateMenu(menu, categoryIndex, menuIndex){
+    function handleUpdateMenu(menu: Menu, categoryIndex: number, menuIndex: number){
         add = false
-        menuForm.value = {...menu, categoryIndex, menuIndex, price: fenToYuan(menu.price)}
+        menuForm.value = {...menu, categoryIndex, menuIndex, price: parseFloat(fenToYuan(menu.price))}
         menuDialogVisible.value = true
     }
 </script>
 
 <template>
     <el-button @click="handleAddCategory()" style="margin-bottom: 10px;" type="primary">添加分类</el-button>
-    <div v-if="!categories?.length" style="margin-top: 10px;">还没有分类哦，点击上方按钮添加一个吧</div>
+    <div v-if="!restaurant!.categories.length" style="margin-top: 10px;">还没有分类哦，点击上方按钮添加一个吧</div>
     <el-collapse v-else>
-        <el-collapse-item v-for="(category, categoryIndex) in categories" :key="category.name">
+        <el-collapse-item v-for="(category, categoryIndex) in restaurant!.categories" :key="category.name">
             <template #title>
                 <div class="category-title">
                     <span>{{ category.name }} <el-icon title="编辑分类名" class="clickable-icon"

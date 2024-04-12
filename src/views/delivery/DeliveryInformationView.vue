@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
     import '@/assets/deliveryPage/common.css'
 
     import { useDeliveryStore } from '@/stores/delivery'
@@ -10,7 +10,7 @@
     import { getDeliveringOrders } from '@/network/deliveryApi'
 
     const { deliveringCount, completeCount, deliveringOrders } = storeToRefs(useDeliveryStore())
-    function handleComplete(orderId){
+    function handleComplete(orderId: string){
         ElMessageBox.confirm(
             '确定完成订单？',
             '提示',
@@ -49,6 +49,6 @@
     <p v-show="deliveringCount === 0">还没有接单哦</p>
     <div v-for="order of deliveringOrders" class="order-wrapper">
         <OrderCard :order="order" class="order-preview" />
-        <el-button type="primary" @click="handleComplete(order.orderId)">确认完成</el-button>
+        <el-button type="primary" @click="handleComplete(order.orderId!)">确认完成</el-button>
     </div>
 </template>

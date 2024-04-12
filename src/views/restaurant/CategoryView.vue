@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
     import MenuCard from '@/components/restaurantPage/MenuCard.vue'
     import { useShoppingStore } from '@/stores/shopping'
     import { storeToRefs } from 'pinia'

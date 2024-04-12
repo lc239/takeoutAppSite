@@ -1,23 +1,24 @@
-<script setup>
+<script setup lang="ts">
     import CommentCard from '@/components/restaurantPage/CommentCard.vue'
     import LoadMoreInView from '@/components/LoadMoreInView.vue'
     import { getComments } from '@/network/restaurantApi'
     import { storeToRefs } from 'pinia'
     import { useShoppingStore } from '@/stores/shopping'
     import { ref } from 'vue'
+    import type { RestaurantComment } from '@/type/class'
 
     const { restaurant } = storeToRefs(useShoppingStore())
-    const comments = ref([])
+    const comments = ref<RestaurantComment[]>([])
     let pageOffset = 0
     const pageSize = 20
-    const loadView = ref(null)
+    const loadView = ref<InstanceType<typeof LoadMoreInView> | null>(null)
     function loadMore(){
         getComments(restaurant.value.id, pageOffset, pageSize, {
             onSucceed: list => {
                 if(list.length < pageSize){
-                    loadView.value.unobserve()
+                    loadView.value!.unobserve()
                 }else{
-                    loadView.value.waitNext()
+                    loadView.value!.waitNext()
                 }
                 comments.value.push(...list)
                 pageOffset++

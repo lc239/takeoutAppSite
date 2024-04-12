@@ -129,7 +129,7 @@ const router = createRouter({
       ],
       beforeEnter: (to, from) => {
         const { setRestaurant } = useShoppingStore()
-        getRestaurantById(to.params.id, {
+        getRestaurantById(parseInt(to.params.id as string), {
           onSucceed: res => setRestaurant(res)
         })
       }

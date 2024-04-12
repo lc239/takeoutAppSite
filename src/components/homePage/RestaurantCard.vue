@@ -1,9 +1,12 @@
-<script setup>
+<script setup lang="ts">
     import { getAliRestaurantImgUrl } from '@/js/aliOssConfig'
     import { averageToFixed, fenToYuan } from '@/js/unit'
+    import type { RestaurantPreview } from '@/type/class';
     import { useRouter } from 'vue-router'
 
-    const props = defineProps(['restaurantPreview'])
+    const props = defineProps<{
+        restaurantPreview: RestaurantPreview
+    }>()
     const router = useRouter()
 </script>
 

@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
     import TopNav from '@/components/homePage/TopNav.vue'
-    import { onBeforeMount, provide } from 'vue'
+    import { onBeforeMount, provide, ref } from 'vue'
     import { getInfo } from '@/network/userApi'
     import { getDeliveringOrders } from '@/network/deliveryApi'
     import { getDeliveringOrders as getUsersDeliveringOrders } from '@/network/userApi'
@@ -13,9 +13,10 @@
     import { fenToYuan, instantToFormat } from '@/js/unit'
     import dayjs from 'dayjs'
     import { useRouter } from 'vue-router'
+    import { WebSocketMsg } from '@/type/class'
 
     const { openWs, checkMsgs, closeOrderDialog, removeCheckingMsg, pushMsgs } = useUserStore()
-    const { msgDrawer, msgs, checkingOrderId, orderDialogVisible, isLogin, isDeliveryMan } = storeToRefs(useUserStore())
+    const { msgDrawer, msgs, checkingOrderId, orderDialogVisible, isLogin, user } = storeToRefs(useUserStore())
     const router = useRouter()
 
     function handleTakeOrder(){
@@ -36,17 +37,18 @@
         removeCheckingMsg()
         closeOrderDialog()
     }
-    
+
+    const loadingUser = ref(true)
     onBeforeMount(() => {
         //进入首页获取信息
-        if(isLogin){
+        if(isLogin.value){
             getInfo({
                 onSucceed: () => {
                     openWs() //进入页面没问题就建立websocket连接
-                    if(isDeliveryMan){ //是骑手获取正在配送的单
+                    if(user.value!.isDeliveryMan){ //是骑手获取正在配送的单
                         getDeliveringOrders({
                             onSucceed: orders => {
-                                const msgs = orders.map(order => ({ type: 1, time: dayjs(), order }))
+                                const msgs = orders.map(order => new WebSocketMsg(1, dayjs(), order))
                                 pushMsgs(...msgs) //进入页面获取正被派送的单
                             }
                         })
@@ -60,18 +62,19 @@
                             }
                         }
                     })
-                }
+                },
+                onFinally: () => loadingUser.value = false
             })
         }
         else{
-            router.push({name: 'Login'})
+            router.push({name: 'Login'}).then(() => loadingUser.value = false)
         }
     })
     provide("headerHeightPx", 50)
 </script>
 
 <template>
-    <el-container>
+    <el-container v-if="!loadingUser">
         <el-header height="50px" id="top-nav">
             <TopNav/>
         </el-header>

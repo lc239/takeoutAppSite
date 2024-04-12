@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
     import { aliUrlPrefix, defaultMenuImgFilename } from '@/js/aliOssConfig'
     import { BASE_URL } from '@/network/axios-instance'
     import { fenToYuan } from '@/js/unit'
@@ -8,26 +8,27 @@
     import { useUserStore } from '@/stores/user'
     import { storeToRefs } from 'pinia'
     import { handleBeforeAvatarUpload } from '@/js/imageUpload'
+    import { ElUpload, genFileId } from 'element-plus'
 
     const props = defineProps(['menuIndex', 'categoryIndex'])
     const { token } = storeToRefs(useUserStore())
-    const { categories } = storeToRefs(useRestaurantStore())
-    const menu = computed(() => categories.value[props.categoryIndex].menus[props.menuIndex])
+    const { restaurant } = storeToRefs(useRestaurantStore())
+    const menu = computed(() => restaurant.value!.categories[props.categoryIndex].menus[props.menuIndex])
     const { setMenuImageFilename } = useRestaurantStore()
     const imageUrl = computed(() => menu.value.imageFilename ? aliUrlPrefix + menu.value.imageFilename : aliUrlPrefix + defaultMenuImgFilename)
     const bodyStyle = {display: 'flex', alignItems: 'center'}
     const imageArea = ref(null)
     const inImageArea = useAreaIn(imageArea)
-    const imageUpload = ref(null)
-    function handleImageUploadSuccess(data){
+    const imageUpload = ref<InstanceType<typeof ElUpload> | null>(null)
+    function handleImageUploadSuccess(data: any){
         setMenuImageFilename(data.data, props.categoryIndex, props.menuIndex)
     }
-    function handleImageUploadExceed(files){
-        imageUpload.value.clearFiles()
+    function handleImageUploadExceed(files: any){
+        imageUpload.value!.clearFiles()
         const file = files[0]
         file.uid = genFileId()
-        imageUpload.value.handleStart(file)
-        imageUpload.value.submit()
+        imageUpload.value!.handleStart(file)
+        imageUpload.value!.submit()
     }
 </script>
 
@@ -43,7 +44,7 @@
             <el-image style="width: 100px; height: 100px; display: block;" :src="imageUrl" />
             <Transition name="fade">
                 <div class="upload-image" v-show="inImageArea"
-                    :style="{ backgroundColor: inImageArea ? 'rgb(66,66,66,.5)' : null }">
+                    :style="{ backgroundColor: inImageArea ? 'rgb(66,66,66,.5)' : '' }">
                     <el-upload 
                         ref="imageUpload" 
                         style="display: flex;" 

@@ -1,7 +1,10 @@
-<script setup>
+<script setup lang="ts">
     import { instantToFormat } from '@/js/unit'
+    import type { RestaurantComment } from '@/type/class';
 
-    const props = defineProps(['comment'])
+    const props = defineProps<{
+        comment: RestaurantComment
+    }>()
 </script>
 
 <template>
@@ -13,7 +16,7 @@
         <div class="horizon-divider"></div>
         <div class="comment-card-content">{{ props.comment.content }}</div>
         <div class="horizon-divider"></div>
-        <div class="comment-card-footer">{{ instantToFormat(props.comment.createTime) }}</div>
+        <div class="comment-card-footer">{{ instantToFormat(props.comment.createTime!) }}</div>
     </div>
 </template>
 

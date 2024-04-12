@@ -1,48 +1,49 @@
-<script setup>
+<script setup lang="ts">
     import { useUserStore } from '@/stores/user'
     import { storeToRefs } from 'pinia'
     import { ref } from 'vue';
     import { ElMessageBox, ElMessage } from 'element-plus';
     import AddAddressDialog from '@/components/userCenter/AddAddressDialog.vue'
     import { setAddresses } from '@/network/userApi'
+    import type { Address } from '@/type/class'
 
-    const { phone, addresses, hasAddress } = storeToRefs(useUserStore())
-    const { setAddresses: setStoreAddresses, addAddress } = useUserStore()
+    const { user, hasAddress } = storeToRefs(useUserStore())
+    const { setAddresses: setStoreAddresses, addAddress, deleteAddress } = useUserStore()
     const addressesDialogVisible = ref(false)
     const addAddressDialogVisible = ref(false)
-    let originAddresses
+    let originAddresses: Address[]
     function openAddressesEditDialog(){
         addressesDialogVisible.value = true
         //打开时先记录原数组
-        originAddresses = addresses.value.slice()
+        originAddresses = user.value!.addresses.slice()
     }
-    const handleClose = (done) => {
+    const handleClose = (done: any) => {
         ElMessageBox.confirm('还没保存，您确定要关闭吗?').then(() => {
             done()
         })
     }
-    function handleDeleteAddress(index){
+    function handleDeleteAddress(index: number){
         ElMessageBox.confirm('您确定要删除这一项吗？').then(() => {
-            addresses.value.splice(index, 1)
+            deleteAddress(index)
         })
     }
     function cancelAddressModify(){
         //取消修改把数组赋值回store
         setStoreAddresses(originAddresses)
     }
-    function setDefaultAddress(index){
-        [addresses.value[0], addresses.value[index]] = [addresses.value[index], addresses.value[0]]
+    function setDefaultAddress(index: number){
+        [user.value!.addresses[0], user.value!.addresses[index]] = [user.value!.addresses[index], user.value!.addresses[0]]
     }
     //添加地址会直接发送请求
     function handleAddAddress(){
-        if(addresses.value.length === 6){
+        if(user.value!.addresses.length === 6){
             ElMessage('最多设置6个地址')
         }else{
             addAddressDialogVisible.value = true
         }
     }
     function handleCommitAddresses(){
-        setAddresses(addresses.value, {
+        setAddresses(user.value!.addresses, {
             onSucceed: () => {
                 ElMessage({
                     type: 'success',
@@ -54,7 +55,7 @@
             }
         })
     }
-    function handleAddAddressEmit(address){
+    function handleAddAddressEmit(address: Address){
         addAddress(address)
         addAddressDialogVisible.value = false
     }
@@ -63,12 +64,12 @@
 <template>
     <el-descriptions title="个人信息" border :column="2">
         <el-descriptions-item label="绑定手机号">
-            {{ phone }}
+            {{ user!.phone }}
         </el-descriptions-item>
         <el-descriptions-item label="默认地址">
             <div class="addresses-description">
                 <!-- 数据暂时先这么表示 -->
-                <span>{{ hasAddress ? Object.values(addresses[0]).join(', ') : '未设置' }}</span>
+                <span>{{ hasAddress ? Object.values(user!.addresses[0]).join(', ') : '未设置' }}</span>
                 <el-icon class="addresses-edit clickable-icon" title="修改地址" size="1.3em" @click="openAddressesEditDialog">
                     <Edit />
                 </el-icon>
@@ -78,7 +79,7 @@
     <el-dialog v-model="addressesDialogVisible" title="我的地址" width="600" :before-close="handleClose">
         <div class="addresses-content">
             <template v-if="hasAddress">
-                <div v-for="(address, index) in addresses" class="address-item">
+                <div v-for="(address, index) in user!.addresses" class="address-item">
                     <div class="data">
                         <span class="item-index">{{ index + 1 }}</span>
                         <span>{{ Object.values(address).join(', ') }}</span>

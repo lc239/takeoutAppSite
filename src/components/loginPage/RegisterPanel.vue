@@ -1,8 +1,8 @@
-<script setup>
-  import { reactive } from 'vue'
+<script setup lang="ts">
+  import { ref } from 'vue'
   import { register } from '@/network/userApi'
 
-  const form = reactive({
+  const form = ref({
     username: '',
     phone: '',
     password: ''

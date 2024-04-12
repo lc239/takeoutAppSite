@@ -1,21 +1,22 @@
-<script setup>
+<script setup lang="ts">
     import LoadMoreInView from '@/components/LoadMoreInView.vue'
     import CompletedOrderItem from '@/components/userCenter/CompletedOrderItem.vue'
     import CommentDialog from '@/components/userCenter/CommentDialog.vue'
     import { getOrders } from '@/network/userApi'
     import { ref } from 'vue'
+    import type { Order } from '@/type/class'
 
-    const orders = ref([])
+    const orders = ref<Order[]>([])
     let pageOffset = 0 //该请求的页数偏移
     const pageSize = 10 //一页10个
-    const loadView = ref(null)
+    const loadView = ref<InstanceType<typeof LoadMoreInView> | null>(null)
     function loadMore(){
         getOrders({pageOffset, pageSize}, {
             onSucceed: newOrders => {
                 if (newOrders.length < pageSize) {
-                    loadView.value.unobserve()
+                    loadView.value!.unobserve()
                 }else{
-                    loadView.value.waitNext()
+                    loadView.value!.waitNext()
                 }
                 orders.value.push(...newOrders)
                 pageOffset++

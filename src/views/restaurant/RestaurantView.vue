@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
     import { getAliRestaurantImgUrl } from '@/js/aliOssConfig';
     import { storeToRefs } from 'pinia'
     import { useShoppingStore } from '@/stores/shopping'
@@ -17,16 +17,16 @@
 
     watch(
         () => route.params.id,
-        async newId => {
+        newId => {
             clearShoppingCar()
-            getRestaurantById(newId, {
+            getRestaurantById(parseInt(newId as string), {
                 onSucceed: res => {
                     setRestaurant(res)
                 }
             })
         }
     )
-    function handleAddAddress(addressForm){
+    function handleAddAddress(addressForm: {name: string, address: string, phone: string}){
         ElMessage("正在提交，请稍等")
         addAddress(addressForm, {
             onSucceed: () => {

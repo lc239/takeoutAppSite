@@ -1,27 +1,29 @@
-<script setup>
+<script setup lang="ts">
     import HoverArea from '@/components/HoverArea.vue'
     import { useUserStore } from '@/stores/user'
     import { Search } from '@element-plus/icons-vue'
     import { storeToRefs } from 'pinia'
-    import { computed, ref } from 'vue'
+    import { ref } from 'vue'
     import { searchRestaurantByPrefix } from '@/network/restaurantApi'
     import { averageToFixed } from '@/js/unit'
     import { useRouter } from 'vue-router'
+    import type { RestaurantPreview } from '@/type/class'
+    import type { ElInput } from 'element-plus'
 
     const { avatarUrl, isLogin, newMsgNum } = storeToRefs(useUserStore())
     const { logout, showMsgDrawer, resetNewMsg } = useUserStore()
     const router = useRouter()
     const searchContent = ref('')
     const waitingSearchRes = ref(false)
-    const searchRes = ref([])
-    let searchTimer
+    const searchRes = ref<RestaurantPreview[]>([])
+    let searchTimer: number
     const searchSize = 4
     const searchMsgEnum = {
         success: `搜索成功, 最多预览${searchSize}个结果`,
         failed: '没有搜索到结果',
         error: '出错了，请检查网络'
     }
-    function search(prefix){
+    function search(prefix: string){
         if(prefix === '') return
         waitingSearchRes.value = true
         clearTimeout(searchTimer)
@@ -46,11 +48,11 @@
     }
     const showSearchSuggestion = ref(false)
     const searchMsg = ref('')
-    function handleClickSearchItem(id){
+    function handleClickSearchItem(id: number){
         router.push({name: 'RestaurantWithCategory', params: {id}})
-        searchInput.value.blur()
+        searchInput.value!.blur()
     }
-    const searchInput = ref(null)
+    const searchInput = ref<InstanceType<typeof ElInput> | null>(null)
     function handleClickMessageIcon(){
         resetNewMsg()
         showMsgDrawer()

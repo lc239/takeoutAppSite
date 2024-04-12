@@ -1,14 +1,14 @@
-<script setup>
+<script setup lang="ts">
     import { storeToRefs } from 'pinia'
     import { useUserStore } from '@/stores/user'
     import { ref } from 'vue'
     import { useAreaIn } from '@/js/mouse'
     import { getInfo, modifyUsername } from '@/network/userApi'
-    import { genFileId, ElMessage } from 'element-plus'
+    import { genFileId, ElUpload } from 'element-plus'
     import { BASE_URL } from '@/network/axios-instance'
     import { handleBeforeAvatarUpload } from '@/js/imageUpload'
 
-    const { avatarUrl, username, isSeller, isDeliveryMan, token } = storeToRefs(useUserStore())
+    const { avatarUrl, user, token } = storeToRefs(useUserStore())
     const avatarArea = ref(null)
     const inAvatarArea = useAreaIn(avatarArea)
     const editingUsername = ref(false)
@@ -18,37 +18,37 @@
     //请求修改用户名会显示请求中
     const requestingUsername = ref(false)
     const updateUsernameSuccess = ref(false)
-    let usernameTimer
+    let usernameTimer: number
     function submitUsername() {
         clearTimeout(usernameTimer)
         updateUsernameSuccess.value = false
         editingUsername.value = false
         requestingUsername.value = true
-        modifyUsername(username.value, {
-            onSucceed: res => {
+        modifyUsername(user.value!.username, {
+            onSucceed: () => {
                 updateUsernameSuccess.value = true
                 usernameTimer = setTimeout(() => {
                     requestingUsername.value = false
                     updateUsernameSuccess.value = false
                 }, 500)
-                oldUsername = username.value
+                oldUsername = user.value!.username
             },
-            onFailed: msg => {
-                username.value = oldUsername
+            onFailed: () => {
+                user.value!.username = oldUsername
             }
         })
     }
-    let oldUsername = username.value //响应是失败就把这个赋值回去
-    const avatarUpload = ref(null)
+    let oldUsername = user.value!.username //响应是失败就把这个赋值回去
+    const avatarUpload = ref<InstanceType<typeof ElUpload> | null>(null)
     function handleAvatarUploadSuccess(){
         getInfo()
     }
-    function handleAvatarUploadExceed(files){
-        avatarUpload.value.clearFiles()
+    function handleAvatarUploadExceed(files: any){
+        avatarUpload.value!.clearFiles()
         const file = files[0]
         file.uid = genFileId()
-        avatarUpload.value.handleStart(file)
-        avatarUpload.value.submit()
+        avatarUpload.value!.handleStart(file)
+        avatarUpload.value!.submit()
     }
 </script>
 
@@ -60,7 +60,7 @@
                     <el-avatar :src="avatarUrl" :size="120" :style="{ filter: inAvatarArea ? 'blur(.5px)' : null, transition: 'filter .5s', verticalAlign: 'bottom' }" />
                     <Transition name="fade">
                         <div class="change-avatar" v-show="inAvatarArea"
-                            :style="{ backgroundColor: inAvatarArea ? 'rgb(66,66,66,.5)' : null }">
+                            :style="{ backgroundColor: inAvatarArea ? 'rgb(66,66,66,.5)' : '' }">
                             <el-upload ref="avatarUpload" style="display: flex;" :limit="1" name="avatar" :show-file-list="false"
                                 :on-success="handleAvatarUploadSuccess"
                                 :on-exceed="handleAvatarUploadExceed"
@@ -74,11 +74,11 @@
                 </div>
                 <div class="username">
                     <template v-if="editingUsername">
-                        <el-input v-model="username" maxlength="10" show-word-limit type="text" clearable size="small"
+                        <el-input v-model="user!.username" maxlength="10" show-word-limit type="text" clearable size="small"
                             :style="{ width: '240px' }" @keyup.enter="submitUsername" @blur="submitUsername"></el-input>
                     </template>
                     <template v-else>
-                        {{ username }}
+                        {{ user!.username }}
                     </template>
                     <el-icon class="username-edit clickable-icon" title="修改用户名" size="1em" @click="clickEditUsername">
                         <Edit />

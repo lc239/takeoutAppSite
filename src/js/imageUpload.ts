@@ -1,6 +1,6 @@
-import { ElMessage } from 'element-plus'
+import { ElMessage, type UploadRawFile } from 'element-plus'
 
-export function handleBeforeAvatarUpload(rawFile) {
+export function handleBeforeAvatarUpload(rawFile: UploadRawFile) {
     if (rawFile.type !== 'image/jpeg' && rawFile.type !== 'image/png' && rawFile.type !== 'image/webp') {
         ElMessage.error('必须上传图片哦')
         return false

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
   import LoginPanel from "@/components/loginPage/LoginPanel.vue";
   import RegisterPanel from "@/components/loginPage/RegisterPanel.vue";
   import { useUserStore } from "@/stores/user";
@@ -13,8 +13,8 @@
   onBeforeRouteLeave((to, from) => {
     if(isLogin) return true
     ElMessage({
-      message: '请先登录，解锁更多功能',
-      type: '提示',
+      message: '请先登录',
+      type: 'info'
     })
     return false
   })

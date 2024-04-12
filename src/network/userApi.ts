@@ -1,9 +1,10 @@
-import instance from "@/network/axios-instance"
+import instance, { MyApiHandlers, type MyApiHandler } from "@/network/axios-instance"
 import { defaultHandlers } from "@/network/axios-instance"
 import { useUserStore } from "@/stores/user"
 import { useHistoryStore } from '@/stores/history'
 import { storeToRefs } from "pinia"
 import router from "@/router"
+import type { Address, Order, RestaurantComment, User } from "@/type/class"
 
 // export function getInfo(){
 //     return instance.get('/user/info').then(res => {
@@ -21,10 +22,10 @@ import router from "@/router"
 //     })
 // }
 
-export function getInfo(handlers = {}){
+export function getInfo(handlers: MyApiHandler<User> = {}){
     // const curHandlers = {...handlers, __proto__: defaultHandlers}
     // const curHandlers = {...defaultHandlers, ...handlers}
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+    const curHandlers: MyApiHandlers<User> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.get('/user/info').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -33,16 +34,14 @@ export function getInfo(handlers = {}){
                 curHandlers.onSucceed(res.data.data)
             }
             else {
-                //获取信息失败就去登录页
-                router.push({name: 'Login'})
                 curHandlers.onFailed(res.data.message)
             }
         }
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function login(loginInfo, handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function login(loginInfo: {phone: string, password: string}, handlers: MyApiHandler<never> = {}){
+    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.post('/user/login', loginInfo).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -51,7 +50,7 @@ export function login(loginInfo, handlers = {}){
                 //登录成功获取一次用户信息
                 getInfo({onSucceed: () => {
                     router.push('/')
-                    openWs() //开启websocket
+                    openWs()
                 }})
                 curHandlers.onSucceed()
             }
@@ -62,14 +61,17 @@ export function login(loginInfo, handlers = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function register(registerInfo, handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function register(registerInfo: {phone: string, username: string, password: string}, handlers: MyApiHandler<never> = {}){
+    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.post('/user/register', registerInfo).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                const { setTokens } = useUserStore()
+                const { setTokens, openWs } = useUserStore()
                 setTokens(res.data.data.token, res.data.data.refreshToken)
-                getInfo({ onSucceed: () => router.push('/') }) //注册成功登录，获取用户信息
+                getInfo({ onSucceed: () => {
+                    router.push('/')
+                    openWs() //开启websocket
+                } }) //注册成功登录，获取用户信息
                 curHandlers.onSucceed()
             }
             else {
@@ -79,13 +81,13 @@ export function register(registerInfo, handlers = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function modifyUsername(newUsername, handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function modifyUsername(newUsername: string, handlers: MyApiHandler<never> = {}){
+    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.put('/user/update/username', {username: newUsername}).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
-                const { username } = storeToRefs(useUserStore())
-                username.value = newUsername //修改成功修改store
+                const { user } = storeToRefs(useUserStore());
+                (user.value as User).username = newUsername //修改成功修改store
                 curHandlers.onSucceed()
             }
             else {
@@ -95,8 +97,8 @@ export function modifyUsername(newUsername, handlers = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function getOrders({pageOffset, pageSize}, handlers = {}) {
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function getOrders({pageOffset, pageSize}: {pageOffset: number, pageSize: number}, handlers: MyApiHandler<Order[]> = {}) {
+    const curHandlers: MyApiHandlers<Order[]> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.get(`/user/orders/${pageOffset}/${pageSize}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -108,8 +110,8 @@ export function getOrders({pageOffset, pageSize}, handlers = {}) {
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function putOrder(order, restaurantId, handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function putOrder(order: Order, restaurantId: number, handlers: MyApiHandler<Order> = {}){
+    const curHandlers: MyApiHandlers<Order> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.put(`/user/order/put/${restaurantId}`, order).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -121,14 +123,14 @@ export function putOrder(order, restaurantId, handlers = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function addAddress(address, handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function addAddress(address: Address, handlers: MyApiHandler<never> = {}){
+    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.patch('/user/address/add', address).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { addAddress } = useUserStore()
                 addAddress(address)
-                curHandlers.onSucceed(res.data.data)
+                curHandlers.onSucceed()
             }else{
                 curHandlers.onFailed(res.data.message)
             }
@@ -136,14 +138,14 @@ export function addAddress(address, handlers = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function setAddresses(addressArr, handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function setAddresses(addressArr: Address[], handlers: MyApiHandler<never> = {}){
+    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.put('/user/address/set', addressArr).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { setAddresses } = useUserStore()
                 setAddresses(addressArr)
-                curHandlers.onSucceed(res.data.data)
+                curHandlers.onSucceed()
             }else{
                 curHandlers.onFailed(res.data.message)
             }
@@ -151,8 +153,8 @@ export function setAddresses(addressArr, handlers = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function commentOrder(orderId, comment, handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function commentOrder(orderId: string, comment: RestaurantComment, handlers: MyApiHandler<RestaurantComment> = {}){
+    const curHandlers: MyApiHandlers<RestaurantComment> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.put(`/user/order/comment/${orderId}`, comment).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -164,8 +166,8 @@ export function commentOrder(orderId, comment, handlers = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function getDeliveringOrders(handlers = {}){
-    const curHandlers = Object.assign(Object.create(defaultHandlers), handlers)
+export function getDeliveringOrders(handlers: MyApiHandler<Order[]> = {}){
+    const curHandlers: MyApiHandlers<Order[]> = Object.assign(Object.create(defaultHandlers), handlers)
     instance.get('/user/orders/delivering').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {

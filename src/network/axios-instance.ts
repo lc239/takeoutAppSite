@@ -1,11 +1,28 @@
 import axios from "axios"
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { useRouter } from 'vue-router'
 import { ElMessage } from "element-plus"
+import router from "@/router"
 
-export const defaultHandlers = {
-    onSucceed: res => {}, //api的实现不一定是返回一个参数，也不一定返回哪个参数，具体看方法内部的调用
+export interface MyApiHandler<T>{
+    onSucceed?: (res: T) => void
+    onFailed?: (msg: string) => void
+    onError?: (err: any) => void
+    onFinally?: () => void
+}
+
+export class MyApiHandlers<T> implements MyApiHandler<T>{
+    onSucceed = (res?: T) => {}
+    onFailed: (msg: string) => void = msg => ElMessage.error(msg)
+    onError: (err: any) => void = err => {
+        console.log(err)
+        ElMessage.error('请检查网络或重新登录')
+    }
+    onFinally: () => void = () => {}
+}
+
+export const defaultHandlers: MyApiHandlers<any> = {
+    onSucceed: () => {},
     onFailed: msg => ElMessage.error(msg),
     onError: err => {
         console.log(err)
@@ -51,14 +68,12 @@ instance.interceptors.response.use(response => {
                 }).catch(err => {
                     const { logout } = useUserStore()
                     logout()
-                    const router = useRouter()
                     router.push({name: 'Login'})
                 })
             }
             else{
                 const { logout } = useUserStore()
                 logout()
-                const router = useRouter()
                 router.push({name: 'Login'})
                 return Promise.reject(error)
             }

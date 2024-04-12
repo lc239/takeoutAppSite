@@ -1,8 +1,10 @@
-<script setup>
+<script setup lang="ts">
     import { ref } from 'vue'
     import { notSpace, isPhoneNumber } from '@/js/formValidator'
 
-    defineEmits(['addAddress'])
+    defineEmits<{
+       addAddress: [form: {name: string, address: string, phone: string}]
+    }>()
     const dialogVisible = defineModel()
 
     const addressForm = ref({

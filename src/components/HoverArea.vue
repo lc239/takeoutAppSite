@@ -1,37 +1,34 @@
-<script setup>
+<script setup lang="ts">
     import { onMounted, onBeforeUnmount, ref } from 'vue'
 
-    const props = defineProps({
-        inDelay: {
-            type: Number,
-            default: 0
-        },
-        outDelay: {
-            type: Number,
-            default: 0
-        }
+    const props = withDefaults(defineProps<{
+        inDelay: number
+        outDelay: number
+    }>(), {
+        inDelay: 0,
+        outDelay: 0
     })
-    const hoverArea = ref(null)
+    const hoverArea = ref<HTMLDivElement | null>(null)
     const inArea = ref(false)
-    let inTimer, outTimer
+    let inTimer: number, outTimer: number
     
     function onMouseEnter() {
         clearTimeout(outTimer)
         inTimer = setTimeout(() => inArea.value = true, props.inDelay)//添加inDelay防止路过目标区域便弹出面板之类
     }
-    function onMouseLeave(e) {
-        if (!hoverArea.value.contains(e.relatedTarget)) {
+    function onMouseLeave(e: any) {
+        if (!hoverArea.value!.contains(e.relatedTarget)) {
             clearTimeout(inTimer)
             outTimer = setTimeout(() => inArea.value = false, props.outDelay)//添加outDelay防止移动到弹出面板过程中路过外部区域导致面板消失
         }
     }
     onBeforeUnmount(() => {
-        hoverArea.value.removeEventListener('mouseenter', onMouseEnter)
-        hoverArea.value.removeEventListener('mouseleave', onMouseLeave)
+        hoverArea.value!.removeEventListener('mouseenter', onMouseEnter)
+        hoverArea.value!.removeEventListener('mouseleave', onMouseLeave)
     })
     onMounted(() => {
-        hoverArea.value.addEventListener('mouseenter', onMouseEnter)
-        hoverArea.value.addEventListener('mouseleave', onMouseLeave)
+        hoverArea.value!.addEventListener('mouseenter', onMouseEnter)
+        hoverArea.value!.addEventListener('mouseleave', onMouseLeave)
     })
 </script>
 

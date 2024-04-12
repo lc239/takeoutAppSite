@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
     import { useShoppingStore } from '@/stores/shopping'
     import { storeToRefs } from 'pinia'
     import MenuCard from '@/components/restaurantPage/MenuCard.vue'
@@ -9,8 +9,8 @@
 
     const { shoppingDialogVisible, menus, orderedMenus, restaurant } = storeToRefs(useShoppingStore())
     const { closeShoppingDialog, clearShoppingCar, showAddAddressDialog } = useShoppingStore()
-    const { addresses } = storeToRefs(useUserStore())
-    const withKeyAddresses = computed(() => addresses.value.map((e, i) => {return {...e, id: i}}))
+    const { user } = storeToRefs(useUserStore())
+    const withKeyAddresses = computed(() => user.value!.addresses.map((e, i) => {return {...e, id: i}}))
     const addressSelect = ref()
     const orderDisabled = ref(false)
     function handleOrder(){

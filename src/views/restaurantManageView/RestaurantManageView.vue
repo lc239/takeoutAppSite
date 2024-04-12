@@ -1,18 +1,18 @@
-<script setup>
+<script setup lang="ts">
     import { useUserStore } from '@/stores/user';
     import { storeToRefs } from 'pinia';
     import { ref, inject } from 'vue';
     import { getRestaurant, register } from '@/network/restaurantApi';
 
-    const { isSeller } = storeToRefs(useUserStore())
-    if(isSeller.value) getRestaurant()
+    const { user } = storeToRefs(useUserStore())
+    if(user.value!.isSeller) getRestaurant()
     const registerForm = ref({name: '', introduction: ''})
-    const headerHeightPx = inject("headerHeightPx")
+    const headerHeightPx = inject<number>("headerHeightPx")
 </script>
 
 <template>
     <el-container class="restaurant-manage-view">
-        <el-main v-if="!isSeller" class="not-seller-content" >
+        <el-main v-if="!user!.isSeller" class="not-seller-content" >
             <span class="tip">您还不是商家，填写下面信息注册成为商家吧</span>
             <el-form v-model="registerForm" style="width: 500px;">
                 <el-form-item label="店铺名称">
@@ -42,7 +42,7 @@
                     </el-menu-item>
                 </el-menu>
             </el-aside>
-            <el-main :style="{height: `calc(100vh - ${headerHeightPx + 16 + 40}px)`}" >
+            <el-main :style="{height: `calc(100vh - ${headerHeightPx! + 16 + 40}px)`}" >
                 <el-scrollbar height="100%">
                     <RouterView/>
                 </el-scrollbar>

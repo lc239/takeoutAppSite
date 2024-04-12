@@ -1,26 +1,25 @@
-<script setup>
+<script setup lang="ts">
     import { getAliMenuImgUrl } from '@/js/aliOssConfig';
     import { fenToYuan } from '@/js/unit';
     import { useShoppingStore } from '@/stores/shopping';
+    import type { Menu, OrderedMenu } from '@/type/class';
     import { Plus, Minus } from '@element-plus/icons-vue'
 
     //订单里的菜单和下单时的菜单不一样，多了num属性，且不在store里不能操作，用op表示
     //由于订单里查询到的菜单不会有图片，所以全会是默认图片，有时间会修改
-    const props = defineProps({
-        menu: {
-            type: Object
-        },
-        op: {
-            type: Boolean,
-            default: false
-        }
+    const props = withDefaults(defineProps<{
+        menu: Menu
+        op: boolean
+    }>(), {
+        op: false
     })
+
     const { addMenu, removeMenu, getMenuCount } = useShoppingStore()
 </script>
 
 <template>
     <div class="menu-card">
-        <el-image class="menu-img" :src="getAliMenuImgUrl(props.menu.imageFilename)"/>
+        <el-image class="menu-img" :src="getAliMenuImgUrl(props.menu.imageFilename!)"/>
         <div class="menu-desc">
             <span class="menu-name">{{ menu.name }}</span>
             <span class="menu-price">{{ '单价：' + fenToYuan(menu.price) + '元' }}</span>

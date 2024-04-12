@@ -1,28 +1,28 @@
-<script setup>
+<script setup lang="ts">
     import { BASE_URL } from '@/network/axios-instance';
     import { useRestaurantStore } from '@/stores/restaurant';
     import { useUserStore } from '@/stores/user';
-    import { ElMessage, genFileId } from 'element-plus';
+    import { ElMessage, ElUpload, genFileId } from 'element-plus';
     import { storeToRefs } from 'pinia';
     import { computed, ref } from 'vue';
     import { handleBeforeAvatarUpload } from '@/js/imageUpload'
 
     const { token } = storeToRefs(useUserStore())
-    const { avatarUrl, name } = storeToRefs(useRestaurantStore())
+    const { avatarUrl, restaurant } = storeToRefs(useRestaurantStore())
     const { setAvatarFilename } = useRestaurantStore()
     const imageStyle = {width: '148px', height: '148px'} //同上传的尺寸
     const uploadImage = ref([])
     const hasImage = computed(() => uploadImage.value.length > 0)
-    const upload = ref(null)
-    function handleExceed(files){
-        upload.value.clearFiles()
+    const upload = ref<InstanceType<typeof ElUpload> | null>(null)
+    function handleExceed(files: any){
+        upload.value!.clearFiles()
         const file = files[0]
         file.uid = genFileId()
-        upload.value.handleStart(file)
+        upload.value!.handleStart(file)
     }
-    function handleSuccess(data){
+    function handleSuccess(data: any){
         ElMessage('上传成功')
-        upload.value.clearFiles()
+        upload.value!.clearFiles()
         if(data.code === 0) setAvatarFilename(data.data)
     }
 </script>
@@ -50,7 +50,7 @@
             <template #file="{ file }">
                 <el-image class="el-upload-list__item-thumbnail" :src="file.url"></el-image>
                 <span class="el-upload-list__item-actions">
-                    <span class="el-upload-list__item-delete" @click="upload.clearFiles()">
+                    <span class="el-upload-list__item-delete" @click="upload!.clearFiles()">
                         <el-icon>
                             <Delete />
                         </el-icon>
@@ -58,9 +58,9 @@
                 </span>
             </template>
         </el-upload>
-        <el-button v-show="hasImage" @click="() => upload.submit()">提交图片</el-button>
+        <el-button v-show="hasImage" @click="() => upload!.submit()">提交图片</el-button>
     </div>
-    <p>店铺名称：{{ name }}</p>
+    <p>店铺名称：{{ restaurant!.name }}</p>
 </template>
 
 <style>

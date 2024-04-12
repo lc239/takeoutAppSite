@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
     import { ref } from 'vue'
     import { commentOrder } from '@/network/userApi'
     import { ElMessage } from 'element-plus'
@@ -15,7 +15,7 @@
     })
     function handleCommit(){
         buttonDisable.value = true
-        commentOrder(commentingOrder.value.id, commentForm.value, {
+        commentOrder(commentingOrder.value!.orderId!, commentForm.value, {
             onSucceed: comment => {
                 ElMessage({
                     type: 'success',
@@ -25,7 +25,7 @@
                     rate: 0,
                     content: ''
                 }
-                commentingOrder.value.commentId = comment.id
+                commentingOrder.value!.commentId = comment.id
             },
             onFinally: () => {
                 closeCommentDialog()

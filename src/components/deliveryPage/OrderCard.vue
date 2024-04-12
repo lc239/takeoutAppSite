@@ -1,7 +1,10 @@
-<script setup>
+<script setup lang="ts">
     import { instantToFormat } from '@/js/unit'
+    import type { Order } from '@/type/class';
 
-    const props = defineProps(['order'])
+    const props = defineProps<{
+        order: Order
+    }>()
 </script>
 
 <template>
@@ -9,7 +12,7 @@
         <div class="flex-space-between">
             <span>{{ '姓名：' + props.order.address.name }}</span>
             <span>{{ '电话：' + props.order.address.phone }}</span>
-            <span>{{ '下单时间：' + instantToFormat(props.order.createTime) }}</span>
+            <span>{{ '下单时间：' + instantToFormat(props.order.createTime!) }}</span>
         </div>
         <div>{{ '地址：' + props.order.address.address }}</div>
     </el-card>
