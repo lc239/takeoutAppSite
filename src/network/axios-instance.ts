@@ -5,7 +5,7 @@ import { ElMessage } from "element-plus"
 import router from "@/router"
 
 interface MyApiBaseHandlerInterface{
-    onSucceed?: (() => void) | ((res: any) => void)
+    onSucceed?: (res?: any) => void
     onFailed?: (msg: string) => void
     onError?: (err: any) => void
     onFinally?: () => void
@@ -19,25 +19,16 @@ export interface ResHandler<T> extends MyApiBaseHandlerInterface{
     onSucceed?: (res: T) => void
 }
 
-export class MyApiHandler<T>{
-    onSucceed: (res?: T) => void
-    onFailed: (msg: string) => void
-    onError: (err: any) => void
-    onFinally: () => void
-    static defaultHandlers: MyApiHandler<any> = {
-        onSucceed: () => {},
-        onFailed: msg => ElMessage.error(msg),
-        onError: err => {
-            console.log(err)
-            ElMessage.error('请检查网络或重新登录')
-        },
-        onFinally: () => {}
+export class MyApiHandler<T> implements MyApiBaseHandlerInterface{
+    onSucceed: (res?: T) => void = () => {}
+    onFailed: (msg: string) => void = msg => ElMessage.error(msg)
+    onError: (err: any) => void = err => {
+        console.log(err)
+        ElMessage.error('请检查网络或重新登录')
     }
+    onFinally: () => void = () => {}
     constructor(myApiHandler?: MyApiBaseHandlerInterface){
-        this.onSucceed = myApiHandler?.onSucceed || MyApiHandler.defaultHandlers.onSucceed
-        this.onFailed = myApiHandler?.onFailed || MyApiHandler.defaultHandlers.onFailed
-        this.onError = myApiHandler?.onError || MyApiHandler.defaultHandlers.onError
-        this.onFinally = myApiHandler?.onFinally || MyApiHandler.defaultHandlers.onFinally
+        Object.assign(this, myApiHandler)
     }
 }
 
