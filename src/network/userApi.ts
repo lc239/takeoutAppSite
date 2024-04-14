@@ -1,5 +1,4 @@
-import instance, { MyApiHandlers, type MyApiHandler } from "@/network/axios-instance"
-import { defaultHandlers } from "@/network/axios-instance"
+import instance, { MyApiHandler, type NoResHandler, type ResHandler } from "@/network/axios-instance"
 import { useUserStore } from "@/stores/user"
 import { useHistoryStore } from '@/stores/history'
 import { storeToRefs } from "pinia"
@@ -22,10 +21,10 @@ import type { Address, Order, RestaurantComment, User } from "@/type/class"
 //     })
 // }
 
-export function getInfo(handlers: MyApiHandler<User> = {}){
+export function getInfo(handlers?: ResHandler<User>){
     // const curHandlers = {...handlers, __proto__: defaultHandlers}
     // const curHandlers = {...defaultHandlers, ...handlers}
-    const curHandlers: MyApiHandlers<User> = Object.assign(Object.create(defaultHandlers), handlers)
+    const curHandlers: MyApiHandler<User> = new MyApiHandler(handlers)
     instance.get('/user/info').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -40,8 +39,8 @@ export function getInfo(handlers: MyApiHandler<User> = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function login(loginInfo: {phone: string, password: string}, handlers: MyApiHandler<never> = {}){
-    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
+export function login(loginInfo: {phone: string, password: string}, handlers?: NoResHandler){
+    const curHandlers: MyApiHandler<never> = new MyApiHandler(handlers)
     instance.post('/user/login', loginInfo).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -61,8 +60,8 @@ export function login(loginInfo: {phone: string, password: string}, handlers: My
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function register(registerInfo: {phone: string, username: string, password: string}, handlers: MyApiHandler<never> = {}){
-    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
+export function register(registerInfo: {phone: string, username: string, password: string}, handlers?: NoResHandler){
+    const curHandlers: MyApiHandler<never> = new MyApiHandler(handlers)
     instance.post('/user/register', registerInfo).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -81,8 +80,8 @@ export function register(registerInfo: {phone: string, username: string, passwor
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function modifyUsername(newUsername: string, handlers: MyApiHandler<never> = {}){
-    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
+export function modifyUsername(newUsername: string, handlers?: NoResHandler){
+    const curHandlers: MyApiHandler<never> = new MyApiHandler(handlers)
     instance.put('/user/update/username', {username: newUsername}).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -97,8 +96,8 @@ export function modifyUsername(newUsername: string, handlers: MyApiHandler<never
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function getOrders({pageOffset, pageSize}: {pageOffset: number, pageSize: number}, handlers: MyApiHandler<Order[]> = {}) {
-    const curHandlers: MyApiHandlers<Order[]> = Object.assign(Object.create(defaultHandlers), handlers)
+export function getOrders({pageOffset, pageSize}: {pageOffset: number, pageSize: number}, handlers?: ResHandler<Order[]>) {
+    const curHandlers: MyApiHandler<Order[]> = new MyApiHandler(handlers)
     instance.get(`/user/orders/${pageOffset}/${pageSize}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -110,8 +109,8 @@ export function getOrders({pageOffset, pageSize}: {pageOffset: number, pageSize:
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function putOrder(order: Order, restaurantId: number, handlers: MyApiHandler<Order> = {}){
-    const curHandlers: MyApiHandlers<Order> = Object.assign(Object.create(defaultHandlers), handlers)
+export function putOrder(order: Order, restaurantId: number, handlers?: ResHandler<Order>){
+    const curHandlers: MyApiHandler<Order> = new MyApiHandler(handlers)
     instance.put(`/user/order/put/${restaurantId}`, order).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -123,8 +122,8 @@ export function putOrder(order: Order, restaurantId: number, handlers: MyApiHand
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function addAddress(address: Address, handlers: MyApiHandler<never> = {}){
-    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
+export function addAddress(address: Address, handlers?: NoResHandler){
+    const curHandlers: MyApiHandler<never> = new MyApiHandler(handlers)
     instance.patch('/user/address/add', address).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -138,8 +137,8 @@ export function addAddress(address: Address, handlers: MyApiHandler<never> = {})
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function setAddresses(addressArr: Address[], handlers: MyApiHandler<never> = {}){
-    const curHandlers: MyApiHandlers<never> = Object.assign(Object.create(defaultHandlers), handlers)
+export function setAddresses(addressArr: Address[], handlers?: NoResHandler){
+    const curHandlers: MyApiHandler<never> = new MyApiHandler(handlers)
     instance.put('/user/address/set', addressArr).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -153,8 +152,8 @@ export function setAddresses(addressArr: Address[], handlers: MyApiHandler<never
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function commentOrder(orderId: string, comment: RestaurantComment, handlers: MyApiHandler<RestaurantComment> = {}){
-    const curHandlers: MyApiHandlers<RestaurantComment> = Object.assign(Object.create(defaultHandlers), handlers)
+export function commentOrder(orderId: string, comment: RestaurantComment, handlers?: ResHandler<RestaurantComment>){
+    const curHandlers: MyApiHandler<RestaurantComment> = new MyApiHandler(handlers)
     instance.put(`/user/order/comment/${orderId}`, comment).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -166,8 +165,8 @@ export function commentOrder(orderId: string, comment: RestaurantComment, handle
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function getDeliveringOrders(handlers: MyApiHandler<Order[]> = {}){
-    const curHandlers: MyApiHandlers<Order[]> = Object.assign(Object.create(defaultHandlers), handlers)
+export function getDeliveringOrders(handlers?: ResHandler<Order[]>){
+    const curHandlers: MyApiHandler<Order[]> = new MyApiHandler(handlers)
     instance.get('/user/orders/delivering').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {

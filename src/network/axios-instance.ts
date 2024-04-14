@@ -4,31 +4,41 @@ import { storeToRefs } from 'pinia'
 import { ElMessage } from "element-plus"
 import router from "@/router"
 
-export interface MyApiHandler<T>{
-    onSucceed?: (res: T) => void
+interface MyApiBaseHandlerInterface{
+    onSucceed?: (() => void) | ((res: any) => void)
     onFailed?: (msg: string) => void
     onError?: (err: any) => void
     onFinally?: () => void
 }
 
-export class MyApiHandlers<T> implements MyApiHandler<T>{
-    onSucceed = (res?: T) => {}
-    onFailed: (msg: string) => void = msg => ElMessage.error(msg)
-    onError: (err: any) => void = err => {
-        console.log(err)
-        ElMessage.error('请检查网络或重新登录')
-    }
-    onFinally: () => void = () => {}
+export interface NoResHandler extends MyApiBaseHandlerInterface{
+    onSucceed?: () => void
 }
 
-export const defaultHandlers: MyApiHandlers<any> = {
-    onSucceed: () => {},
-    onFailed: msg => ElMessage.error(msg),
-    onError: err => {
-        console.log(err)
-        ElMessage.error('请检查网络或重新登录')
-    },
-    onFinally: () => {}
+export interface ResHandler<T> extends MyApiBaseHandlerInterface{
+    onSucceed?: (res: T) => void
+}
+
+export class MyApiHandler<T>{
+    onSucceed: (res?: T) => void
+    onFailed: (msg: string) => void
+    onError: (err: any) => void
+    onFinally: () => void
+    static defaultHandlers: MyApiHandler<any> = {
+        onSucceed: () => {},
+        onFailed: msg => ElMessage.error(msg),
+        onError: err => {
+            console.log(err)
+            ElMessage.error('请检查网络或重新登录')
+        },
+        onFinally: () => {}
+    }
+    constructor(myApiHandler?: MyApiBaseHandlerInterface){
+        this.onSucceed = myApiHandler?.onSucceed || MyApiHandler.defaultHandlers.onSucceed
+        this.onFailed = myApiHandler?.onFailed || MyApiHandler.defaultHandlers.onFailed
+        this.onError = myApiHandler?.onError || MyApiHandler.defaultHandlers.onError
+        this.onFinally = myApiHandler?.onFinally || MyApiHandler.defaultHandlers.onFinally
+    }
 }
 
 export const BASE_URL = import.meta.env.VITE_BASE_URL

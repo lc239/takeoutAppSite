@@ -1,5 +1,5 @@
-import instance, { type MyApiHandler, type MyApiHandlers } from "@/network/axios-instance"
-import { defaultHandlers } from "@/network/axios-instance"
+import instance, { MyApiHandler, type ResHandler } from "@/network/axios-instance"
+// import { defaultHandlers } from "@/network/axios-instance"
 import { useDeliveryStore } from "@/stores/delivery"
 import { useUserStore } from '@/stores/user'
 import type { Order } from "@/type/class"
@@ -8,8 +8,8 @@ class DeliveryMan{
     completeCount: number = 0
 }
 
-export function getInfo(handlers: MyApiHandler<DeliveryMan> = {}){
-    const curHandlers: MyApiHandlers<DeliveryMan> = Object.assign(Object.create(defaultHandlers), handlers)
+export function getInfo(handlers?: ResHandler<DeliveryMan>){
+    const curHandlers: MyApiHandler<DeliveryMan> = new MyApiHandler(handlers)
     instance.get('/delivery/info').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -25,8 +25,8 @@ export function getInfo(handlers: MyApiHandler<DeliveryMan> = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function register(handlers: MyApiHandler<DeliveryMan> = {}){
-    const curHandlers: MyApiHandlers<DeliveryMan> = Object.assign(Object.create(defaultHandlers), handlers)
+export function register(handlers?: ResHandler<DeliveryMan>){
+    const curHandlers: MyApiHandler<DeliveryMan> = new MyApiHandler(handlers)
     instance.post('/delivery/register').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -43,8 +43,8 @@ export function register(handlers: MyApiHandler<DeliveryMan> = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function takeOrder(orderId: string, handlers: MyApiHandler<Order> = {}){
-    const curHandlers: MyApiHandlers<Order> = Object.assign(Object.create(defaultHandlers), handlers)
+export function takeOrder(orderId: string, handlers?: ResHandler<Order>){
+    const curHandlers: MyApiHandler<Order> = new MyApiHandler(handlers)
     instance.patch(`/delivery/order/take/${orderId}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -57,8 +57,8 @@ export function takeOrder(orderId: string, handlers: MyApiHandler<Order> = {}){
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function completeOrder(orderId: string, handlers: MyApiHandler<DeliveryMan> = {}){
-    const curHandlers: MyApiHandlers<DeliveryMan> = Object.assign(Object.create(defaultHandlers), handlers)
+export function completeOrder(orderId: string, handlers?: ResHandler<DeliveryMan>){
+    const curHandlers: MyApiHandler<DeliveryMan> = new MyApiHandler(handlers)
     instance.patch(`/delivery/order/complete/${orderId}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -73,8 +73,8 @@ export function completeOrder(orderId: string, handlers: MyApiHandler<DeliveryMa
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function getOrders(indexStart: number, indexEnd: number, handlers: MyApiHandler<Order[]> = {}){
-    const curHandlers: MyApiHandlers<Order[]> = Object.assign(Object.create(defaultHandlers), handlers)
+export function getOrders(indexStart: number, indexEnd: number, handlers?: ResHandler<Order[]>){
+    const curHandlers: MyApiHandler<Order[]> = new MyApiHandler(handlers)
     instance.get(`/delivery/order/take/${indexStart}/${indexEnd}`).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
@@ -87,8 +87,8 @@ export function getOrders(indexStart: number, indexEnd: number, handlers: MyApiH
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function getDeliveringOrders(handlers: MyApiHandler<Order[]> = {}){
-    const curHandlers: MyApiHandlers<Order[]> = Object.assign(Object.create(defaultHandlers), handlers)
+export function getDeliveringOrders(handlers?: ResHandler<Order[]>){
+    const curHandlers: MyApiHandler<Order[]> = new MyApiHandler(handlers)
     instance.get('/delivery/order/delivering').then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
