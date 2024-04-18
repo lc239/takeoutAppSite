@@ -7,9 +7,10 @@
     import { genFileId, ElUpload } from 'element-plus'
     import { BASE_URL } from '@/network/axios-instance'
     import { handleBeforeAvatarUpload } from '@/js/imageUpload'
+    import { Edit, Check } from '@element-plus/icons-vue'
 
     const { avatarUrl, user, token } = storeToRefs(useUserStore())
-    const avatarArea = ref(null)
+    const avatarArea = ref<HTMLDivElement | null>(null)
     const inAvatarArea = useAreaIn(avatarArea)
     const editingUsername = ref(false)
     function clickEditUsername() {
@@ -92,9 +93,9 @@
             </div>
             <el-container class="user-main">
                 <el-aside width="150px" class="user-aside">
-                    <el-menu router>
+                    <el-menu router default-active="/userCenter">
                         <el-menu-item index="/userCenter">个人信息</el-menu-item>
-                        <el-sub-menu>
+                        <el-sub-menu index="1">
                             <template #title>
                                 <span>历史记录</span>
                             </template>

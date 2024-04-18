@@ -55,6 +55,7 @@
 
 <style>
 .user-delivering-order{
+    /* content-visibility: auto; */
     cursor: pointer;
 }
 .user-delivering-order .address{

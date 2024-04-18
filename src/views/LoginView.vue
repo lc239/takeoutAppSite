@@ -1,11 +1,11 @@
 <script setup lang="ts">
-  import LoginPanel from "@/components/loginPage/LoginPanel.vue";
-  import RegisterPanel from "@/components/loginPage/RegisterPanel.vue";
-  import { useUserStore } from "@/stores/user";
-  import { ElMessage } from "element-plus";
-  import { storeToRefs } from "pinia";
-  import { ref } from "vue";
-  import { onBeforeRouteLeave } from "vue-router";
+  import LoginPanel from "@/components/loginPage/LoginPanel.vue"
+  import RegisterPanel from "@/components/loginPage/RegisterPanel.vue"
+  import { useUserStore } from "@/stores/user"
+  import { ElMessage } from "element-plus"
+  import { storeToRefs } from "pinia"
+  import { ref } from "vue"
+  import { onBeforeRouteLeave } from "vue-router"
 
   const login = ref(true)
   const { isLogin } = storeToRefs(useUserStore())
@@ -45,6 +45,7 @@
     border: 1px solid var(--blue1);
     border-radius: 6px;
     padding: 0 20px 10px;
+    flex: 0 1 500px;
   }
   #tab-bar{
     padding: 18px 0 ;

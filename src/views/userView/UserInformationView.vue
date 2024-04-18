@@ -6,6 +6,7 @@
     import AddAddressDialog from '@/components/userCenter/AddAddressDialog.vue'
     import { setAddresses } from '@/network/userApi'
     import type { Address } from '@/type/class'
+    import { Edit, Top, Close } from '@element-plus/icons-vue'
 
     const { user, hasAddress } = storeToRefs(useUserStore())
     const { setAddresses: setStoreAddresses, addAddress, deleteAddress } = useUserStore()

@@ -2,7 +2,7 @@
     import LoadMoreInView from '@/components/LoadMoreInView.vue'
     import RestaurantCard from '@/components/homePage/RestaurantCard.vue'
     import { getRestaurantsByPage } from '@/network/restaurantApi'
-    import { RestaurantPreview } from '@/type/class';
+    import { RestaurantPreview } from '@/type/class'
     import { ref } from 'vue'
 
     const restaurants = ref<RestaurantPreview[]>([])
@@ -51,9 +51,23 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-auto-rows: 150px;
-    grid-auto-columns: 350px;
     column-gap: 14px;
     row-gap: 10px;
+}
+@media screen and (max-width: 1400px) {
+    #home-view > .restaurant-cards{
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media screen and (max-width: 1050px) {
+    #home-view > .restaurant-cards{
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media screen and (max-width: 770px) {
+    #home-view > .restaurant-cards{
+        grid-template-columns: 1fr;
+    }
 }
 #home-load-bottom{
     display: flex;

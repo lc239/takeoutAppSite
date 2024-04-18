@@ -2,7 +2,7 @@
     import { getAliMenuImgUrl } from '@/js/aliOssConfig';
     import { fenToYuan } from '@/js/unit';
     import { useShoppingStore } from '@/stores/shopping';
-    import type { Menu, OrderedMenu } from '@/type/class';
+    import type { Menu } from '@/type/class';
     import { Plus, Minus } from '@element-plus/icons-vue'
 
     //订单里的菜单和下单时的菜单不一样，多了num属性，且不在store里不能操作，用op表示

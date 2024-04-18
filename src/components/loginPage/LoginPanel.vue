@@ -12,7 +12,7 @@
 </script>
 
 <template>
-  <div id="login-panel">
+  <div>
     <el-form :model="form" label-width="auto" style="max-width: 500px">
       <el-form-item label="手机号码">
         <el-input v-model="form.phone" />
@@ -29,9 +29,6 @@
 </template>
 
 <style>
-  #login-panel{
-    width: 500px;
-  }
   #login-button-area{
     flex-direction: column;
     width: 100%;

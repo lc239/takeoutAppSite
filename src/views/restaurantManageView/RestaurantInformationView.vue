@@ -6,6 +6,7 @@
     import { storeToRefs } from 'pinia';
     import { computed, ref } from 'vue';
     import { handleBeforeAvatarUpload } from '@/js/imageUpload'
+    import { Plus, Delete } from '@element-plus/icons-vue'
 
     const { token } = storeToRefs(useUserStore())
     const { avatarUrl, restaurant } = storeToRefs(useRestaurantStore())

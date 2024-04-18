@@ -17,7 +17,7 @@
     const { setMenuImageFilename } = useRestaurantStore()
     const imageUrl = computed(() => menu.value.imageFilename ? aliUrlPrefix + menu.value.imageFilename : aliUrlPrefix + defaultMenuImgFilename)
     const bodyStyle = {display: 'flex', alignItems: 'center'}
-    const imageArea = ref(null)
+    const imageArea = ref<HTMLDivElement | null>(null)
     const inImageArea = useAreaIn(imageArea)
     const imageUpload = ref<InstanceType<typeof ElUpload> | null>(null)
     function handleImageUploadSuccess(data: any){

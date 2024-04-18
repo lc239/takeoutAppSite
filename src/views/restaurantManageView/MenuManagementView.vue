@@ -7,6 +7,7 @@
     import { ElMessage, ElMessageBox } from 'element-plus';
     import { fenToYuan, yuanToFen } from '@/js/unit';
     import { Menu } from '@/type/class';
+    import { Edit } from '@element-plus/icons-vue'
 
     const { restaurant } = storeToRefs(useRestaurantStore())
     const { checkMenuName } = useRestaurantStore()

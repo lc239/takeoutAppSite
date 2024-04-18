@@ -1,14 +1,15 @@
 <script setup lang="ts">
     import HoverArea from '@/components/HoverArea.vue'
     import { useUserStore } from '@/stores/user'
-    import { Search } from '@element-plus/icons-vue'
+    import { Search, Message } from '@element-plus/icons-vue'
     import { storeToRefs } from 'pinia'
-    import { ref } from 'vue'
+    import { onMounted, ref } from 'vue'
     import { searchRestaurantByPrefix } from '@/network/restaurantApi'
     import { averageToFixed } from '@/js/unit'
     import { useRouter } from 'vue-router'
     import type { RestaurantPreview } from '@/type/class'
-    import type { ElInput } from 'element-plus'
+    import type { ElBadge, ElInput } from 'element-plus'
+    import { useDraggable } from '@/js/mouse'
 
     const { avatarUrl, isLogin, newMsgNum } = storeToRefs(useUserStore())
     const { logout, showMsgDrawer, resetNewMsg } = useUserStore()
@@ -57,6 +58,17 @@
         resetNewMsg()
         showMsgDrawer()
     }
+    const msgBadge = ref<InstanceType<typeof ElBadge> | null>(null)
+    const msgBadge2 = ref<HTMLDivElement | null>(null)
+    useDraggable(msgBadge2, {top: '100%'}, {right: '2px'}) //使第二个消息图标可拖拽
+    const msgBadge2Visible = ref(false)
+    const msgBadgeObserver = new IntersectionObserver(e => {
+        msgBadge2Visible.value = !e[0].isIntersecting
+    }, { threshold: 0 })
+
+    onMounted(() => {
+        msgBadgeObserver.observe(msgBadge.value!.$el)
+    })
 </script>
 
 <template>
@@ -66,18 +78,21 @@
         <el-button>下载安卓app</el-button>
     </div>
     <div class="top-nav-search vertical-position-parent">
-        <el-input v-if="isLogin" ref="searchInput" v-model="searchContent" placeholder="输入店名搜索" size="large" class="search-input" clearable
-            @input="search(searchContent)" @focus="showSearchSuggestion = true" @blur="showSearchSuggestion = false">
+        <el-input v-if="isLogin" ref="searchInput" v-model="searchContent" placeholder="输入店名搜索" size="large"
+            class="search-input" clearable @input="search(searchContent)" @focus="showSearchSuggestion = true"
+            @blur="showSearchSuggestion = false">
             <template #append>
                 <el-button :icon="Search" />
             </template>
         </el-input>
         <Transition name="fade">
             <div v-show="showSearchSuggestion && searchContent.length" class="search-suggestion">
-                <div v-for="restaurant in searchRes" class="search-item" 
-                @click="handleClickSearchItem(restaurant.id)">
-                    <span>{{ restaurant.name }}</span>
-                    <el-rate class="search-restaurant-rate" :model-value="averageToFixed(restaurant.rate, restaurant.rateCount, 1)" disabled show-score score-template="{value}" />
+                <div v-for="restaurant in searchRes" class="search-item" :title="restaurant.name"
+                    @click="handleClickSearchItem(restaurant.id)">
+                    <span class="search-item-name">{{ restaurant.name }}</span>
+                    <el-rate class="search-restaurant-rate"
+                        :model-value="averageToFixed(restaurant.rate, restaurant.rateCount, 1)" disabled show-score
+                        score-template="{value}" />
                 </div>
                 <div class="search-item search-tip" v-loading="waitingSearchRes">
                     <span v-show="!waitingSearchRes">
@@ -86,7 +101,6 @@
                 </div>
             </div>
         </Transition>
-
     </div>
     <div class="top-nav-right">
         <div class="nav-main">
@@ -109,18 +123,31 @@
         </div>
         <div class="nav-extra">
             <!-- 把这里的新消息绑定 -->
-            <el-badge :value="newMsgNum" :show-zero="false">
+            <el-badge ref="msgBadge" :value="newMsgNum" :show-zero="false">
                 <el-icon :size="30" @click="handleClickMessageIcon()" class="clickable-icon">
                     <Message />
                 </el-icon>
             </el-badge>
         </div>
     </div>
+    <Transition name="fade">
+        <div ref="msgBadge2" v-show="msgBadge2Visible" id="msg-badge-float" draggable="true" @click="handleClickMessageIcon()" class="clickable-icon">
+            <el-badge :value="newMsgNum" :show-zero="false">
+                <el-icon :size="30">
+                    <Message />
+                </el-icon>
+            </el-badge>
+        </div>
+    </Transition>
 </template>
 
 <style>
 #nav-to-home{
     margin: 0 16px 0 8px;
+}
+
+.top-nav-left{
+    min-width: max-content;
 }
 
 .top-nav-right {
@@ -168,6 +195,7 @@
     flex: 1;
     margin: 0 20px;
     max-width: 600px;
+    min-width: 300px;
     z-index: 0;
 }
 .top-nav-search > .search-suggestion{
@@ -192,6 +220,10 @@
     border-bottom: 1px solid #000;
     transition: background-color .3s;
 }
+.search-suggestion > .search-item > .search-item-name{
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .search-suggestion > .search-item:not(:last-child):hover{
     background-color: var(--el-color-primary-light-9);
     cursor: pointer;
@@ -205,5 +237,13 @@
 .search-suggestion > .search-tip{
     width: 100%;
     text-align: center;
+}
+#msg-badge-float{
+    border: 1px solid var(--el-color-primary-light-3);
+    border-radius: 4px;
+    padding: 4px;
+    box-shadow: 0px 0px 5px 0px var(--el-color-primary-light-3);
+    position: absolute;
+    background-color: white;
 }
 </style>

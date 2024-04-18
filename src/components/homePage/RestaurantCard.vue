@@ -65,5 +65,6 @@
     display: flex;
     column-gap: 8px;
     align-self: flex-end;
+    white-space: nowrap;
 }
 </style>

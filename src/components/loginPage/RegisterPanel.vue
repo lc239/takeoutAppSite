@@ -10,7 +10,7 @@
 </script>
 
 <template>
-    <div id="register-panel">
+    <div class="login-panel">
         <el-form :model="form" label-width="auto" style="max-width: 500px">
             <el-form-item label="用户名">
                 <el-input v-model="form.username" />
@@ -32,9 +32,6 @@
 </template>
 
 <style>
-  #register-panel{
-    width: 500px;
-  }
   #register-button-area{
     width: 100%;
     display: flex;

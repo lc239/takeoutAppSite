@@ -5,7 +5,7 @@
     defineEmits<{
        addAddress: [form: {name: string, address: string, phone: string}]
     }>()
-    const dialogVisible = defineModel()
+    const dialogVisible = defineModel<boolean>()
 
     const addressForm = ref({
         name: '',

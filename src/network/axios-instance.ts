@@ -4,22 +4,15 @@ import { storeToRefs } from 'pinia'
 import { ElMessage } from "element-plus"
 import router from "@/router"
 
-interface MyApiBaseHandlerInterface{
-    onSucceed?: (res?: any) => void
-    onFailed?: (msg: string) => void
-    onError?: (err: any) => void
-    onFinally?: () => void
-}
-
-export interface NoResHandler extends MyApiBaseHandlerInterface{
+type PartialHandler = Partial<MyApiHandler<any>>
+export type NoResHandler = Pick<PartialHandler, Exclude<keyof PartialHandler, 'onSucceed'>> & {
     onSucceed?: () => void
 }
-
-export interface ResHandler<T> extends MyApiBaseHandlerInterface{
+export type ResHandler<T> = Pick<PartialHandler, Exclude<keyof PartialHandler, 'onSucceed'>> & {
     onSucceed?: (res: T) => void
 }
 
-export class MyApiHandler<T> implements MyApiBaseHandlerInterface{
+export class MyApiHandler<T>{
     onSucceed: (res?: T) => void = () => {}
     onFailed: (msg: string) => void = msg => ElMessage.error(msg)
     onError: (err: any) => void = err => {
@@ -27,7 +20,7 @@ export class MyApiHandler<T> implements MyApiBaseHandlerInterface{
         ElMessage.error('请检查网络或重新登录')
     }
     onFinally: () => void = () => {}
-    constructor(myApiHandler?: MyApiBaseHandlerInterface){
+    constructor(myApiHandler?: PartialHandler){
         Object.assign(this, myApiHandler)
     }
 }
