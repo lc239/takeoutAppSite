@@ -6,12 +6,14 @@
     import { ElMessageBox } from 'element-plus';
     import type { WebSocketMsg } from '@/type/class';
     import type { CSSProperties } from 'vue';
+    import { useRestaurantStore } from '@/stores/restaurant';
 
     const props = defineProps<{
         msg: WebSocketMsg
     }>()
 
-    const { removeMsg, showOrderDialog } = useUserStore()
+    const { removeMsg } = useUserStore()
+    const { showOrderDialog } = useRestaurantStore()
 
     const bodyStyle: CSSProperties = {
         display: 'flex',

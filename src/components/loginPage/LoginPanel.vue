@@ -1,28 +1,47 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
+  import { reactive, ref } from 'vue'
   import { login } from '@/network/userApi';
-  import { useRouter } from 'vue-router';
+  import { isPhoneNumber, notSpace } from '@/js/formValidator';
+  import type { FormInstance } from 'element-plus';
 
-  const router = useRouter()
-
-  const form = ref({
+  interface LoginForm{
+    phone: string
+    password: string
+  }
+  const form = reactive<LoginForm>({
     phone: '',
     password: ''
   })
+  const ruleFormRef = ref<FormInstance>()
+  const loginRules = {
+    phone: [{ validator: isPhoneNumber, trigger: 'blur' }],
+    password: [{ validator: notSpace, trigger: 'blur' }]
+  }
+  function submitForm(formEl?: FormInstance){
+    if(!formEl) return
+    formEl.validate(valid => {
+      if(valid){
+        login(form)
+      }else{
+        return false
+      }
+    })
+  }
+
 </script>
 
 <template>
   <div>
-    <el-form :model="form" label-width="auto" style="max-width: 500px">
-      <el-form-item label="手机号码">
+    <el-form :model="form" label-width="auto" style="max-width: 500px" :rules="loginRules" ref="ruleFormRef">
+      <el-form-item label="手机号码" prop="phone">
         <el-input v-model="form.phone" />
       </el-form-item>
-      <el-form-item label="密码">
+      <el-form-item label="密码" prop="password">
         <el-input v-model="form.password" type="password"/>
       </el-form-item>
     </el-form>
     <div id="login-button-area">
-      <el-button @click="() => login(form, { onSucceed: () => router.push({name: 'Home'}) })">登录</el-button>
+      <el-button @click="submitForm(ruleFormRef)">登录</el-button>
       <span class="button-text">忘记密码？点击我使用验证码登录</span>
     </div>
   </div>

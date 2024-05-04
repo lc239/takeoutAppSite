@@ -139,8 +139,8 @@ export class Order{
     deliveryPrice?: number
     price?: number
     address: Address
-    createTime?: string | dayjs.Dayjs
-    completeTime?: string | dayjs.Dayjs
+    createTime?: string
+    completeTime?: string
     taken?: boolean
 
     constructor(packPrice: number, deliveryPrice: number, price: number, address: Address){

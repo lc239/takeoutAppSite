@@ -9,13 +9,15 @@
     import { storeToRefs } from 'pinia'
     import { handleBeforeAvatarUpload } from '@/js/imageUpload'
     import { ElUpload, genFileId } from 'element-plus'
+    import { getAliMenuImgUrl } from '@/js/aliOssConfig'
 
     const props = defineProps(['menuIndex', 'categoryIndex'])
+
     const { token } = storeToRefs(useUserStore())
     const { restaurant } = storeToRefs(useRestaurantStore())
     const menu = computed(() => restaurant.value!.categories[props.categoryIndex].menus[props.menuIndex])
     const { setMenuImageFilename } = useRestaurantStore()
-    const imageUrl = computed(() => menu.value.imageFilename ? aliUrlPrefix + menu.value.imageFilename : aliUrlPrefix + defaultMenuImgFilename)
+    const imageUrl = computed(() => getAliMenuImgUrl(menu.value.imageFilename))
     const bodyStyle = {display: 'flex', alignItems: 'center'}
     const imageArea = ref<HTMLDivElement | null>(null)
     const inImageArea = useAreaIn(imageArea)

@@ -1,15 +1,15 @@
 <script setup lang="ts">
-    import MessageCard from '@/components/homePage/MessageCard.vue'
-    import { useUserStore } from '@/stores/user';
-    import { storeToRefs } from 'pinia';
+    import { storeToRefs } from 'pinia'
+    import OrderCard from '@/components/restaurantCenter/OrderCard.vue'
+    import { useRestaurantStore } from '@/stores/restaurant';
 
-    const { orderMsgs } = storeToRefs(useUserStore())
+    const { takenOrders } = storeToRefs(useRestaurantStore())
 </script>
 
 <template>
     <div class="order-manage-view">
-        <span v-show="!orderMsgs.length">还没有订单</span>
-        <MessageCard v-for="msg of orderMsgs" :msg="msg"/>
+        <span v-show="!takenOrders.length">还没有订单</span>
+        <OrderCard v-for="order of takenOrders" :order="order"/>
     </div>
 </template>
 

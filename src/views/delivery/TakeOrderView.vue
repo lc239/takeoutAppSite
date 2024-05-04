@@ -9,7 +9,7 @@
     import { ElMessage } from 'element-plus'
     import { ref } from 'vue'
 
-    const { pushOrder } = useDeliveryStore()
+    const { pushOrder, showOrderDialog } = useDeliveryStore()
     const orders = ref<Order[]>([])
     const loadView = ref<InstanceType<typeof LoadMoreInView> | null>(null)
     let indexStart = 0
@@ -45,7 +45,7 @@
 
 <template>
     <div class="order-wrapper" v-for="order of orders" :key="order.orderId">
-        <OrderCard class="order-preview" :order="order"/>
+        <OrderCard class="order-preview" :order="order" @click="showOrderDialog(order)"/>
         <el-button :disabled="waitingTakeOrder" type="primary" size="large" @click="handleTakeOrder(order.orderId!)">接单</el-button>
     </div>
     <LoadMoreInView id="delivery-take-order-load" ref="loadView" margin-top="10px" @load="() => loadPages()" v-slot="slotProps">

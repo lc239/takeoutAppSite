@@ -11,6 +11,8 @@ export const useUserStore = defineStore('user', () => {
 
     const user: Ref<User | null> = ref(null)
 
+    const isUser = computed(() => !user.value?.isDeliveryMan && !user.value?.isSeller) //分离了3个界面，判断是不是普通用户
+
     const token: Ref<string | null> = ref(null)
     const refreshToken: Ref<string | null> = ref(null)
     const setUsername = (newUsername: string) => user.value!.username = newUsername
@@ -148,14 +150,6 @@ export const useUserStore = defineStore('user', () => {
         msgs.value.push(...newMsgs)
     }
 
-    const orderDialogVisible = ref(false)
-    const showOrderDialog = (orderId: string) => {
-        checkingOrderId.value = orderId
-        orderDialogVisible.value = true
-    }
-    const closeOrderDialog = () => orderDialogVisible.value = false
-    const checkingOrderId = ref('')
-
     const commentingOrder: Ref<Order | null> = ref(null)
     const commentDialogVisible = ref(false)
     const showCommentDialog = (order: Order) => {
@@ -165,10 +159,9 @@ export const useUserStore = defineStore('user', () => {
     const closeCommentDialog = () => commentDialogVisible.value = false
 
     return {
-        user, token, refreshToken, setUsername, addAddress, setAddresses, hasAddress, deleteAddress, setSeller, setDeliveryMan, avatarUrl,
+        user, isUser, token, refreshToken, setUsername, addAddress, setAddresses, hasAddress, deleteAddress, setSeller, setDeliveryMan, avatarUrl,
         isLogin, setTokens, setInfo, logout, ws, openWs, msgs, newMsgNum, resetNewMsg, msgDrawer, checkMsgs, removeMsg, showMsgDrawer, orderMsgs, pushMsgs,
-        orderDialogVisible, showOrderDialog, closeOrderDialog, checkingMsgIndex, removeCheckingMsg, checkingOrderId,
-        commentingOrder, commentDialogVisible, showCommentDialog, closeCommentDialog
+        checkingMsgIndex, removeCheckingMsg, commentingOrder, commentDialogVisible, showCommentDialog, closeCommentDialog
     }
 }, {
     persist: {

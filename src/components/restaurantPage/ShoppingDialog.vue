@@ -6,8 +6,9 @@
     import { computed, ref } from 'vue'
     import { putOrder } from '@/network/userApi'
     import { ElMessage } from 'element-plus'
+    import { fenToYuan } from '@/js/unit'
 
-    const { shoppingDialogVisible, menus, orderedMenus, restaurant } = storeToRefs(useShoppingStore())
+    const { shoppingDialogVisible, menus, orderedMenus, restaurant, totalPrice } = storeToRefs(useShoppingStore())
     const { closeShoppingDialog, clearShoppingCar, showAddAddressDialog } = useShoppingStore()
     const { user } = storeToRefs(useUserStore())
     const withKeyAddresses = computed(() => user.value!.addresses.map((e, i) => {return {...e, id: i}}))
@@ -46,6 +47,7 @@
         </el-scrollbar>
         <template #footer>
             <div class="dialog-footer">
+                <span>总价格：{{ fenToYuan(totalPrice) }}元</span>
                 <el-select v-model="addressSelect" placeholder="选择配送地址" value-key="id" style="padding-bottom: 8px;">
                     <el-option v-for="address of withKeyAddresses" :label="`${address.name},${address.phone},${address.address}`" :value="address" />
                     <template #footer>

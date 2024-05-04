@@ -10,6 +10,7 @@
     import { getDeliveringOrders } from '@/network/deliveryApi'
 
     const { deliveringCount, completeCount, deliveringOrders } = storeToRefs(useDeliveryStore())
+    const { showOrderDialog } = useDeliveryStore()
     function handleComplete(orderId: string){
         ElMessageBox.confirm(
             '确定完成订单？',
@@ -48,7 +49,7 @@
     <h3>待送餐</h3>
     <p v-show="deliveringCount === 0">还没有接单哦</p>
     <div v-for="order of deliveringOrders" class="order-wrapper">
-        <OrderCard :order="order" class="order-preview" />
+        <OrderCard :order="order" class="order-preview" @click="showOrderDialog(order)"/>
         <el-button type="primary" @click="handleComplete(order.orderId!)">确认完成</el-button>
     </div>
 </template>

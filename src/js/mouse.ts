@@ -1,4 +1,4 @@
-import { ref, onUnmounted, type Ref, onMounted } from "vue"
+import { ref, onUnmounted, type Ref, onMounted, onBeforeUnmount } from "vue"
 
 // export function useAreaIn(el: any, inDelay = 0, outDelay = 0) {
 //     const inArea = ref(false)
@@ -45,7 +45,7 @@ export function useAreaIn(el: Ref<HTMLElement | null>, inDelay = 0, outDelay = 0
         el.value!.addEventListener('mouseenter', onMouseEnter)
         el.value!.addEventListener('mouseleave', onMouseLeave)
     })
-    onUnmounted(() => {
+    onBeforeUnmount(() => {
         el.value!.removeEventListener('mouseenter', onMouseEnter)
         el.value!.removeEventListener('mouseleave', onMouseLeave)
     })
@@ -117,7 +117,7 @@ export function useDraggable(
         el.value!.addEventListener('drag', handleDrag)
         el.value!.addEventListener('dragend', handleDragEnd)
     })
-    onUnmounted(() => {
+    onBeforeUnmount(() => {
         el.value!.removeEventListener('dragstart', handleDragStart)
         el.value!.removeEventListener('drag', handleDrag)
         el.value!.removeEventListener('dragend', handleDragEnd)

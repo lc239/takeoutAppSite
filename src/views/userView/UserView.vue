@@ -31,7 +31,7 @@
                 usernameTimer = setTimeout(() => {
                     requestingUsername.value = false
                     updateUsernameSuccess.value = false
-                }, 500)
+                }, 1000)
                 oldUsername = user.value!.username
             },
             onFailed: () => {
@@ -81,7 +81,7 @@
                     <template v-else>
                         {{ user!.username }}
                     </template>
-                    <el-icon class="username-edit clickable-icon" title="修改用户名" size="1em" @click="clickEditUsername">
+                    <el-icon class="username-edit clickable-icon" title="修改用户名" size="1em" @click="clickEditUsername()">
                         <Edit />
                     </el-icon>
                     <div class="username-state" v-show="requestingUsername">
@@ -145,6 +145,13 @@
 
 .username > .username-edit {
     margin-left: 7px;
+}
+
+.username > .username-state{
+    margin-left: 4px;
+    background-color: white;
+    border-radius: 4px;
+    display: flex;
 }
 
 .username > .username-state > .loading-icon {

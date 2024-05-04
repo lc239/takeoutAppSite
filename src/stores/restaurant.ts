@@ -1,11 +1,11 @@
 import { computed, ref, type Ref } from 'vue'
 import { aliUrlPrefix, defaultRestaurantImgFilename } from '@/js/aliOssConfig'
 import { defineStore } from 'pinia'
-import { Restaurant, Menu, OrderedMenu } from '@/type/class'
+import { Restaurant, Menu, OrderedMenu, Order } from '@/type/class'
 
 export const useRestaurantStore = defineStore('restaurant', () => {
 
-    const restaurant: Ref<Restaurant | null> = ref(null)
+    const restaurant = ref<Restaurant | null>(null)
 
     const setName = (newName: string) => restaurant.value!.name = newName
     const averageRate = computed(() => ((restaurant.value?.rate as number) / (restaurant.value?.rateCount as number)).toFixed(1) || 0)
@@ -37,8 +37,28 @@ export const useRestaurantStore = defineStore('restaurant', () => {
         return restaurant.value!.categories[orderedMenu.categoryIndex].menus.find(menu => orderedMenu.name === menu.name)
     }
 
+    const takenOrders = ref<Order[]>([])
+    const takeOrder = (order: Order) => {
+        console.log(order)
+        takenOrders.value.push(order)
+        console.log(takenOrders.value)
+    }
+    const findOrderById = (id: string) =>{
+        console.log(id)
+        return takenOrders.value.find(order => order.orderId === id)
+    }
+    const checkingOrderId = ref<string | undefined>(undefined)
+
+    const orderDialogVisible = ref(false)
+    const showOrderDialog = (orderId?: string) => {
+        checkingOrderId.value = orderId
+        orderDialogVisible.value = true
+    }
+    const closeOrderDialog = () => orderDialogVisible.value = false
+
     return{
         restaurant, setName, setAvatarFilename, avatarUrl, averageRate, setRestaurant, findMenuByOrderedMenu,
-        addCategory, deleteCategory, updateCategoryName, addMenu, checkMenuName, deleteMenu, updateMenu, setMenuImageFilename
+        addCategory, deleteCategory, updateCategoryName, addMenu, checkMenuName, deleteMenu, updateMenu, setMenuImageFilename, 
+        orderDialogVisible, showOrderDialog, closeOrderDialog, takenOrders, takeOrder, findOrderById, checkingOrderId
     }
 })

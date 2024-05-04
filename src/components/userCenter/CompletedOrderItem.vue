@@ -80,6 +80,7 @@
     width: 100%;
 }
 .user-history-item-title > .title-right{
+    margin-left: 4px;
     display: flex;
     justify-content: space-between;
     flex-basis: 300px;

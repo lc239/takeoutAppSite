@@ -72,16 +72,19 @@
         menu.price = yuanToFen(menu.price)
         if (add) {
             if (!checkMenuName(menu.name, categoryIndex)) ElMessage('名称不能重复或为空')
-            addMenu(menu, categoryIndex,{
-                onSucceed: () => {
-                    ElMessage({
-                        type: 'success',
-                        message: '添加成功'
-                    })
-                    menuDialogVisible.value = false
-                }
-            })
+            else {
+                addMenu(menu, categoryIndex,{
+                    onSucceed: () => {
+                        ElMessage({
+                            type: 'success',
+                            message: '添加成功'
+                        })
+                        menuDialogVisible.value = false
+                    }
+                })
+            }
         } else {
+            (menu as Menu).imageFilename = imgFilename
             updateMenu(menu, categoryIndex, menuIndex, {
                 onSucceed: () => {
                     ElMessage({
@@ -107,16 +110,19 @@
             })
         })
     }
+    let imgFilename: string
     function handleUpdateMenu(menu: Menu, categoryIndex: number, menuIndex: number){
         add = false
-        menuForm.value = {...menu, categoryIndex, menuIndex, price: parseFloat(fenToYuan(menu.price))}
+        const {name, description} = menu
+        imgFilename = menu.imageFilename! //暂存图片名，因为没写响应
+        menuForm.value = {name, description, categoryIndex, menuIndex, price: parseFloat(fenToYuan(menu.price))}
         menuDialogVisible.value = true
     }
 </script>
 
 <template>
     <el-button @click="handleAddCategory()" style="margin-bottom: 10px;" type="primary">添加分类</el-button>
-    <div v-if="!restaurant!.categories.length" style="margin-top: 10px;">还没有分类哦，点击上方按钮添加一个吧</div>
+    <div v-if="!restaurant!.categories?.length" style="margin-top: 10px;">还没有分类哦，点击上方按钮添加一个吧</div>
     <el-collapse v-else>
         <el-collapse-item v-for="(category, categoryIndex) in restaurant!.categories" :key="category.name">
             <template #title>

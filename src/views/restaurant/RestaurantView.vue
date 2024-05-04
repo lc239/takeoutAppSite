@@ -1,11 +1,11 @@
 <script setup lang="ts">
-    import { getAliRestaurantImgUrl } from '@/js/aliOssConfig';
+    import { getAliRestaurantImgUrl } from '@/js/aliOssConfig'
     import { storeToRefs } from 'pinia'
     import { useShoppingStore } from '@/stores/shopping'
     import ShoppingDialog from '@/components/restaurantPage/ShoppingDialog.vue'
     import AddAddressDialog from '@/components/userCenter/AddAddressDialog.vue'
-    import { useRoute, useRouter } from 'vue-router';
-    import { onUnmounted, watch } from 'vue';
+    import { useRoute, useRouter } from 'vue-router'
+    import { computed, onUnmounted, watch } from 'vue'
     import { getRestaurantById } from '@/network/restaurantApi'
     import { ElMessage } from 'element-plus'
     import { addAddress } from '@/network/userApi'
@@ -15,6 +15,7 @@
     const router = useRouter()
     const route = useRoute()
 
+    //此处待测试
     watch(
         () => route.params.id,
         newId => {
@@ -38,6 +39,25 @@
             }
         })
     }
+    const switchText = computed(() => {
+        if(route.name === 'RestaurantComment'){
+            return '查看菜单'
+        }else{
+            return '查看评论'
+        }
+    })
+    function handleClickSwitch(){
+        if(route.name === 'RestaurantComment'){
+            router.push({
+                name: 'RestaurantWithCategory',
+                params: {
+                    id: restaurant.value.id
+                }
+            })
+        }else{
+            router.push({name: 'RestaurantComment'})
+        }
+    }
     onUnmounted(() => {
         clearShoppingCar()
     })
@@ -57,10 +77,10 @@
                 等补充
             </div>
             <div class="restaurant-ops">
-                <el-button @click="router.push({name: 'RestaurantComment'})">查看评论</el-button>
+                <el-button @click="handleClickSwitch()">{{ switchText }}</el-button>
                 <!-- el-button相邻有css加margin -->
-                <div></div>
-                <el-button>收藏此店</el-button>
+                <!-- <div></div> -->
+                <!-- <el-button>收藏此店</el-button> -->
             </div>
         </el-header>
         <RouterView/>

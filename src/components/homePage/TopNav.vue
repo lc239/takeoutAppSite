@@ -11,7 +11,7 @@
     import type { ElBadge, ElInput } from 'element-plus'
     import { useDraggable } from '@/js/mouse'
 
-    const { avatarUrl, isLogin, newMsgNum } = storeToRefs(useUserStore())
+    const { avatarUrl, isLogin, newMsgNum, isUser, user } = storeToRefs(useUserStore())
     const { logout, showMsgDrawer, resetNewMsg } = useUserStore()
     const router = useRouter()
     const searchContent = ref('')
@@ -74,10 +74,10 @@
 <template>
     <!-- 用el-menu改一下? -->
     <div class="top-nav-left">
-        <RouterLink to="/" id="nav-to-home">首页</RouterLink>
+        <RouterLink v-if="isUser" to="/" id="nav-to-home">首页</RouterLink>
         <el-button>下载安卓app</el-button>
     </div>
-    <div class="top-nav-search vertical-position-parent">
+    <div v-if="isUser" class="top-nav-search vertical-position-parent">
         <el-input v-if="isLogin" ref="searchInput" v-model="searchContent" placeholder="输入店名搜索" size="large"
             class="search-input" clearable @input="search(searchContent)" @focus="showSearchSuggestion = true"
             @blur="showSearchSuggestion = false">
@@ -115,9 +115,10 @@
             <el-button v-else class="to-login" circle type="primary">登录</el-button>
             <div class="nav-main-right">
                 <div class="to-center">
-                    <RouterLink to="/userCenter">个人中心</RouterLink>
-                    <RouterLink to="/restaurantCenter">店铺管理</RouterLink>
-                    <RouterLink to="/deliveryCenter">骑手中心</RouterLink>
+                    <RouterLink v-if="isUser" to="/userCenter">个人中心</RouterLink>
+                    <!-- <RouterLink to="/restaurantCenter">店铺管理</RouterLink>
+                    <RouterLink to="/deliveryCenter">骑手中心</RouterLink> -->
+                    <!-- 分离了3个界面，不再显示 -->
                 </div>
             </div>
         </div>

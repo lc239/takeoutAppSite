@@ -47,8 +47,11 @@ export function login(loginInfo: {phone: string, password: string}, handlers?: N
                 const { setTokens, openWs } = useUserStore()
                 setTokens(res.data.data.token, res.data.data.refreshToken)
                 //登录成功获取一次用户信息
-                getInfo({onSucceed: () => {
-                    router.push('/')
+                getInfo({onSucceed: user => {
+                    console.log(user)
+                    if(user.isSeller) router.push({name: 'RestaurantInformation'})
+                    else if(user.isDeliveryMan) router.push({name: 'DeliveryInformation'})
+                    else router.push({name: 'Home'})
                     openWs()
                 }})
                 curHandlers.onSucceed()
@@ -60,17 +63,47 @@ export function login(loginInfo: {phone: string, password: string}, handlers?: N
     }).catch(curHandlers.onError).finally(curHandlers.onFinally)
 }
 
-export function register(registerInfo: {phone: string, username: string, password: string}, handlers?: NoResHandler){
+export type RegisterForm = {
+    username: string
+    phone: string
+    password: string
+    role: 0 | 1 | 2
+}
+
+export class RegisterRequest{
+    username: string = ''
+    phone: string = ''
+    password: string = ''
+    isSeller: boolean = false
+    isDeliveryMan: boolean = false
+    constructor(form: RegisterForm){
+        const {role, ...other} = form
+        Object.assign(this, other)
+        switch(role){
+            case 1:
+                this.isSeller = true
+                break
+            case 2: 
+                this.isDeliveryMan = true
+                break
+            default:
+        }
+    }
+}
+
+export function register(registerInfo: RegisterRequest, handlers?: NoResHandler){
     const curHandlers: MyApiHandler<never> = new MyApiHandler(handlers)
     instance.post('/user/register', registerInfo).then(res => {
         if(res.status === 200){
             if(res.data.code === 0) {
                 const { setTokens, openWs } = useUserStore()
                 setTokens(res.data.data.token, res.data.data.refreshToken)
-                getInfo({ onSucceed: () => {
-                    router.push('/')
-                    openWs() //开启websocket
-                } }) //注册成功登录，获取用户信息
+                getInfo({onSucceed: user => {
+                    if(user.isSeller) router.push({name: 'RestaurantInformation'})
+                    else if(user.isDeliveryMan) router.push({name: 'DeliveryInformation'})
+                    else router.push('/')
+                    openWs()
+                }})
                 curHandlers.onSucceed()
             }
             else {

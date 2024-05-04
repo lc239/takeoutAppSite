@@ -24,7 +24,8 @@
 <template>
     <div id="home-view">
         <div id="type-filter">
-            此处预留做类型筛选
+            <!-- 此处预留做类型筛选 -->
+            更多功能敬请期待
         </div>
         <div class="restaurant-cards">
             <RestaurantCard v-for="restaurant in restaurants" :restaurant-preview="restaurant"/>

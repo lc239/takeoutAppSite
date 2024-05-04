@@ -1,7 +1,8 @@
 import dayjs from 'dayjs'
 
 //0 -> 0.00 45 -> 0.45 100 -> 1.00
-export function fenToYuan(fen: number){
+export function fenToYuan(fen?: number){
+    if(fen === undefined) return '0.00'
     return (fen / 100).toFixed(2)
 }
 
@@ -11,8 +12,7 @@ export function yuanToFen(yuan: number){
 }
 
 //2024-03-08T11:10:27Z -> 2024/03/08/11:10:27
-export function instantToFormat(instant: string | dayjs.Dayjs, format = 'YYYY/MM/DD/HH:mm:ss'){
-    if(!instant) return '无'
+export function instantToFormat(instant: string, format = 'YYYY/MM/DD/HH:mm:ss'){
     return dayjs(instant).format(format)
 }
 

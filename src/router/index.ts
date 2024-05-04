@@ -137,12 +137,25 @@ const router = createRouter({
   ]
 })
 
+const sellerReg = /^\/restaurantCenter.*/
+const deliveryReg = /^\/deliveryCenter.*/
+
 //未登录强制前往登录页面
 router.beforeEach((to, from) => {
   console.log(to, from)
-  const { isLogin } = storeToRefs(useUserStore())
+  const { isLogin, user, isUser } = storeToRefs(useUserStore())
   if(to.name === 'Login') return true
   if(!isLogin.value) return {name: 'Login'}
+  if(isUser.value) return true
+  if(user.value?.isSeller){
+    if(sellerReg.test(to.path)) return true //商家只能看商家页面
+    else return false
+  }
+  if(user.value?.isDeliveryMan){
+    if(deliveryReg.test(to.path)) return true //骑手只能看骑手页面
+    else return false
+  }
+  return true
 })
 
 export default router
